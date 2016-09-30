@@ -1,0 +1,33 @@
+%footer.footer-distributed
+  .footer-left
+    %h3
+      Company
+      %span logo
+    %p.footer-links
+      %a{:href => "#"} Home
+      ·
+      %a{:href => "#"} Blog
+      ·
+      %a{:href => "#"} Pricing
+      ·
+      %a{:href => "#"} About
+      ·
+      %a{:href => "#"} Faq
+      ·
+      %a{:href => "#"} Contact
+    %p.footer-company-name Company Name &copy; #{Date.today.year}
+    .footer-icons
+      %a{:href => "#"}
+        %i.fa.fa-facebook
+      %a{:href => "#"}
+        %i.fa.fa-twitter
+      %a{:href => "#"}
+        %i.fa.fa-linkedin
+      %a{:href => "#"}
+        %i.fa.fa-github
+  .footer-right
+    %p Contact Us
+    %form{:action => "#", :method => "post"}
+      %input{:name => "email", :placeholder => "Email", :type => "text"}/
+      %textarea{:name => "message", :placeholder => "Message"}
+      %button Send

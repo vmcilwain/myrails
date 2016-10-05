@@ -49,13 +49,13 @@ module Myrails
       template 'rspec/factory.rb', "spec/factories/#{options[:name]}.rb"
     end
 
-    desc 'application_helper_install', 'Replace current application helper with one that has commonly used code'
-    def application_helper_install
+    desc 'install_application_helper', 'Replace current application helper with one that has commonly used code'
+    def install_application_helper
       copy_file 'rails/application_helper.rb', 'app/helpers/application_helper.rb'
     end
 
-    desc 'ui_install', 'Generate UI files and code for prototyping views in app/views/ui'
-    def ui_install
+    desc 'install_ui', 'Generate UI files and code for prototyping views in app/views/ui'
+    def install_ui
       copy_file 'ui/ui_controller.rb', 'app/controllers/ui_controller.rb'
       copy_file 'ui/index.html.haml', 'app/views/ui/index.html.haml'
       inject_into_file 'config/routes.rb', after: "Rails.application.routes.draw do\n" do <<-CODE
@@ -68,8 +68,13 @@ module Myrails
       end
     end
 
-    desc 'rspec_install', 'Generate rspec structure & rspec configuration that I commonly use'
-    def rspec_install
+    desc 'install_rspec', 'Generate rspec structure & rspec configuration that I commonly use'
+    def install_rspec
+      insert_into_file 'Gemfile', after: "gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]\n" do <<-CODE
+gem 'rspec-rails', group: :test
+      CODE
+      end
+      run 'bundle install'
       run 'rails g rspec:install'
       copy_file 'rspec/database_cleaner.rb', "spec/support/configs/database_cleaner.rb"
       copy_file 'rspec/factory_girl.rb', 'spec/support/configs/factory_girl.rb'
@@ -81,9 +86,9 @@ module Myrails
       copy_file 'rspec/files.rb', 'spec/support/configs/files.rb'
     end
 
-    desc 'mailer_install --email=email@example.com', 'Generate sendgrid initializer and mail interceptor'
+    desc 'install_mailer --email=email@example.com', 'Generate sendgrid initializer and mail interceptor'
     option :email, required: true
-    def mailer_install
+    def install_mailer
       copy_file 'mailer/sendgrid.rb', 'config/initializers/sendgrid.rb'
       template 'mailer/dev_mail_interceptor.rb', 'app/mailers/dev_mail_interceptor.rb'
       ENVIRONMENTS.each do |environment|
@@ -130,8 +135,8 @@ module Myrails
       end
     end
 
-    desc 'rails_helper_install', 'Add code to rspec/rails_helper so rspec runs the way I like'
-    def rails_helper_install
+    desc 'install_rails_helper', 'Add code to rspec/rails_helper so rspec runs the way I like'
+    def install_rails_helper
       inject_into_file "spec/rails_helper.rb", after: "require 'rspec/rails'\n" do <<-CODE
   require 'simplecov'
   SimpleCov.start
@@ -154,8 +159,8 @@ module Myrails
       end
     end
 
-    desc 'devise_install', 'Generate devise files'
-    def devise_install
+    desc 'install_devise', 'Generate devise files'
+    def install_devise
       insert_into_file 'Gemfile', after: "gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]\n" do <<-CODE
     gem 'devise', '~> 4.2.0'
       CODE
@@ -201,8 +206,8 @@ module Myrails
       end
     end
 
-    desc 'pundit_install', 'Install pundit gem and generate pundit files and application controller code'
-    def pundit_install
+    desc 'install_pundit', 'Install pundit gem and generate pundit files and application controller code'
+    def install_pundit
       insert_into_file 'Gemfile', after: "gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]\n" do <<-CODE
     gem 'pundit'
       CODE
@@ -241,8 +246,8 @@ module Myrails
       end
     end
 
-    desc 'footnotes_install', 'Install rails-footnotes and run its generator'
-    def footnotes_install
+    desc 'install_footnotes', 'Install rails-footnotes and run its generator'
+    def install_footnotes
       insert_into_file 'Gemfile', after: "gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]\n" do <<-CODE
     gem 'rails-footnotes'
       CODE
@@ -251,11 +256,10 @@ module Myrails
       run 'rails generate rails_footnotes:install'
     end
 
-    desc 'gems_install', 'Add & Install gems that I commonly use'
-    def gems_install
+    desc 'install_gems', 'Add & Install gems that I commonly use'
+    def install_gems
       insert_into_file 'Gemfile', before: "group :development, :test do" do <<-CODE
   group :test do
-    gem 'rspec-rails'
     gem 'simplecov'
     gem 'shoulda-matchers'
     gem 'factory_girl_rails'
@@ -298,8 +302,8 @@ module Myrails
       end
     end
 
-    desc 'assets_install', 'Generate common asset pipeline files'
-    def assets_install
+    desc 'install_assets', 'Generate common asset pipeline files'
+    def install_assets
       run "rm app/assets/stylesheets/application.css"
       copy_file 'assets/application.css.sass', 'app/assets/stylesheets/application.css.sass'
       copy_file 'assets/application.js', 'app/assets/javascripts/application.js'
@@ -308,8 +312,8 @@ module Myrails
     end
 
 
-    desc 'css_install', 'Generate & include application css theme'
-    def css_install
+    desc 'install_css', 'Generate & include application css theme'
+    def install_css
       themes = Dir[File.join(TEMPLATES, 'assets', 'bootstrap_themes', '*')]
 
       themes.each_with_index do |theme, index|
@@ -326,8 +330,8 @@ module Myrails
       end
     end
 
-    desc 'footer_install', 'Generate & include application footer'
-    def footer_install
+    desc 'install_footer', 'Generate & include application footer'
+    def install_footer
       footers = Dir[File.join(TEMPLATES, 'layout', 'footers', '*.haml')]
       footers_css = Dir[File.join(TEMPLATES, 'layout', 'footers', 'css', '*')]
 
@@ -346,8 +350,8 @@ module Myrails
       end
     end
 
-    desc 'layout_install', 'Generate common layout files'
-    def layout_install
+    desc 'install_layout', 'Generate common layout files'
+    def install_layout
       run 'rm app/views/layouts/application.html.erb'
       template 'layout/application.html.haml', 'app/views/layouts/application.html.haml'
       template 'layout/_nav.html.haml', 'app/views/layouts/_nav.html.haml'
@@ -356,8 +360,8 @@ module Myrails
       copy_file 'layout/_error_messages.html.haml', 'app/views/layouts/_error_messages.html.haml'
     end
 
-    desc 'heroku_install', 'setup application for use with heroku using sqlite3 for development'
-    def heroku_install
+    desc 'install_heroku', 'setup application for use with heroku using sqlite3 for development'
+    def install_heroku
       insert_into_file 'Gemfile', before: "group :development, :test do\n" do <<-CODE
   group :production do
     gem 'pg'

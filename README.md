@@ -2,7 +2,9 @@
 
 This gem was created to make generating rails related files and other rails gem files (that I use) a lot easier. It is a thor backed gem that was designed with rails 5 in mind but most of it "should" work with rails 4.
 
-This gem is not endorsed by 37signals. I wrote it as a convenience for my style of development.
+This gem is not endorsed by 37signals. I wrote it as a convenience for generating files that I would otherwise have written by hand.
+
+NOTE: This gem is not compatible with ruby 2.3 (yet).
 
 Here is an example of the gem in action:
 

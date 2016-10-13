@@ -70,6 +70,11 @@ Vagrant.configure("2") do |config|
   SHELL
 
   config.vm.provision :shell, path: "vagrant-scripts/install-rvm.sh", args: "stable", privileged: false
-  config.vm.provision :shell, path: "vagrant-scripts/install-ruby.sh", args: "2.2.4", privileged: false
+  config.vm.provision :shell, path: "vagrant-scripts/install-ruby.sh", args: "2.2.4 rails", privileged: false
   config.vm.provision :shell, path: "vagrant-scripts/install-ruby.sh", args: "2.3.0 rails haml", privileged: false
+
+  config.vm.provision "shell", inline: <<-SHELL
+    rvm use 2.2.4 --default
+    rails new test_app
+  SHELL
 end

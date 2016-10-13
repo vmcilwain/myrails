@@ -21,10 +21,18 @@ module Myrails
 
     desc 'controller --name=controller-name', 'Generate a rails controller with the given name along with boiler plate code and related spec filet'
     option :name, required: true
+    option :namespace
     def controller
-      template 'rails/controller.rb', "app/controllers/#{options[:name].pluralize}_controller.rb"
-      template 'rspec/controller.rb', "spec/controllers/#{options[:name].pluralize}_controller_spec.rb"
-      run "mkdir -p app/views/#{options[:name].pluralize}"
+      if options[:namespace]
+        template 'rails/namespace_controller.rb', "app/controllers/#{options[:namespace]}/#{options[:name].pluralize}_controller.rb"
+        template 'rails/parent_namespace_controller.rb', "app/controllers/#{options[:namespace]}/#{options[:namespace]}_controller.rb"
+        template 'rspec/namespace_controller.rb', "spec/controllers/#{options[:namespace]}/#{options[:name].pluralize}_controller_spec.rb"
+        run "mkdir -p app/views/#{options[:namespace]}/#{options[:name].pluralize}"
+      else
+        template 'rails/controller.rb', "app/controllers/#{options[:name].pluralize}_controller.rb"
+        template 'rspec/controller.rb', "spec/controllers/#{options[:name].pluralize}_controller_spec.rb"
+        run "mkdir -p app/views/#{options[:name].pluralize}"
+      end
     end
 
     desc 'policy --name=policy-name', 'Generate a pundit policy with the given name and a related spec file'

@@ -14,9 +14,15 @@ module Myrails
 
     desc 'model --name=model-name', 'Generates and empty rails model with the given name and its related spec file'
     option :name, required: true
+    option :namespace
     def model
-      template 'rspec/model.rb', "spec/models/#{options[:name]}_spec.rb"
-      template 'rails/model.rb', "app/models/#{options[:name]}.rb"
+      if options[:namespace]
+        template 'rails/namespace_model.rb', "app/models/#{options[:namespace]}/#{options[:name]}.rb"
+        template 'rspec/namespace_model.rb', "spec/models/#{options[:namespace]}/#{options[:name]}_spec.rb"
+      else
+        template 'rails/model.rb', "app/models/#{options[:name]}.rb"
+        template 'rspec/model.rb', "spec/models/#{options[:name]}_spec.rb"
+      end
     end
 
     desc 'controller --name=controller-name', 'Generate a rails controller with the given name along with boiler plate code and related spec filet'

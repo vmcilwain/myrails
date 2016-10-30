@@ -5,7 +5,7 @@ class <%= options[:name].camelize %>Presenter < BasePresenter
   # Reference initialized object_presenter as object
   presents :<%= options[:name]%>
 
-  # delegate :attribute, to: :object, allow_nil: true
+  # delegate :attribute, to: :<%= options[:name]%>, allow_nil: true
 
   # Return concatenated full name
   def name

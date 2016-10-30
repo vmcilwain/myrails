@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 # Does this controller require authentication?
-describe <%= options[:name].camelize %>Controller do
+describe <%= options[:name].pluralize.camelize %>Controller do
   # let(:user) {create :user}
   let(:<%= options[:name].pluralize %>) {[]}
   let(:<%= options[:name].singularize %>) {create :<%= options[:name].singularize %>}

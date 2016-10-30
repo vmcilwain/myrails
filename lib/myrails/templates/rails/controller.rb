@@ -3,10 +3,10 @@ class <%= options[:name].pluralize.camelize %>Controller < ApplicationController
   private
 
   def <%= options[:name].singularize %>
-    @<%= options[:name].singularize %> = <%= options[:name].capitalize%>.find(params[:id])
+    @<%= options[:name].singularize %> = <%= options[:name].capitalize%>.find(params[:id]) %>
   end
 
   def <%= options[:name].singularize %>_params
-    params.require(:<%= options[:name] %>).permit()
+    params.require(:<%= options[:name].singularize %>).permit()
   end
 end

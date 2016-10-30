@@ -62,7 +62,7 @@ module Myrails
         # Requires an application restart everytime a new page is added.
         Dir.glob('app/views/ui/*.html.haml').sort.each do |file|
           action = File.basename(file,'.html.haml')
-          get "ui/\#{action}", controller: 'ui', action: action
+          get \"ui/\#{action}\", controller: 'ui', action: action
         end
         CODE
       end

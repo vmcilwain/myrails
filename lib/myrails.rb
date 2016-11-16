@@ -411,15 +411,29 @@ gem 'rspec-rails', group: :test
     desc 'engine', 'Configure rails engine for development with RSpec, Capybara and FactoryGirl'
     option :name, required: true
     def engine
+      #need to add updates to the todos in order for bundler to run
       inject_into_file "#{options[:name]}.gemspec", after: "s.license     = "MIT"\n" do <<-CODE
   s.test_files = Dir["spec/**/*"]
         CODE
       end
+
       inject_into_file "#{options[:name]}.gemspec", before: 'end' do <<-CODE
   s.add_development_dependency 'rspec-rails'
   s.add_development_dependency 'capybara'
   s.add_development_dependency 'factory_girl_rails'
         CODE
+      end
+
+      run 'bundle'
+      copy_file 'engines/rakefile', 'Rakefile'
+      run 'rails g rspec:install'
+      gsub_file '# Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }', 'Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each { |f| require f }'
+
+      inject_into_file 'spec/rails_helper.rb', after: "RSpec.configure do |config|\n" do <<-CODE
+  config.mock_with :rspec
+  config.infer_base_class_for_anonymous_controllers = false
+  config.order = "random"
+      CODE
       end
     end
   end

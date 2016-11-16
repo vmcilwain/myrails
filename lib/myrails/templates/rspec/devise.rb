@@ -26,9 +26,13 @@ To use authentication bypass use the following for loging in:
 user = FactoryGirl.create(:user)
 login_as(user, :scope => :user)
 
-if within a test you need to logout a user use:
-logout(:user)
+if within a test you need to sign_out a user use:
+sign_out(:user)
 =end
+
+def set_session(user=create(:user))
+  login_as(user, :scope => :user)
+end
 
 def sign_in_with(user)
   click_link 'Sign In'

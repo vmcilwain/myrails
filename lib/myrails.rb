@@ -9,10 +9,7 @@ module Myrails
     TEMPLATES = source_root
     ENVIRONMENTS = %w(development test production)
 
-    class_option :name
-    class_option :email
-
-    desc 'model --name=model-name', 'Generates and empty rails model with the given name and its related spec file'
+    desc 'model', 'Generates and empty rails model with the given name and its related spec file. Add --namespace=NAME to create a namespaced model'
     option :name, required: true
     option :namespace
     def model
@@ -25,7 +22,7 @@ module Myrails
       end
     end
 
-    desc 'controller --name=controller-name', 'Generate a rails controller with the given name along with boiler plate code and related spec filet'
+    desc 'controller', 'Generate a rails controller with the given name along with boiler plate code and related spec file. Add --namespace=NAME to create namespaced controller'
     option :name, required: true
     option :namespace
     def controller
@@ -41,14 +38,14 @@ module Myrails
       end
     end
 
-    desc 'policy --name=policy-name', 'Generate a pundit policy with the given name and a related spec file'
+    desc 'policy', 'Generate a pundit policy with the given name and a related spec file'
     option :name, required: true
     def policy
       template 'rails/pundit.rb', "app/policies/#{options[:name]}_policy.rb"
       template 'rspec/pundit.rb', "spec/policies/#{options[:name]}_policy_spec.rb"
     end
 
-    desc 'presenter --name=presenter-name', 'Generate a presenter class with the given name and a related spec file'
+    desc 'presenter', 'Generate a presenter class with the given name and a related spec file'
     option :name, required: true
     def presenters
       copy_file 'presenters/base.rb', 'app/presenters/base_presenter.rb'
@@ -57,7 +54,7 @@ module Myrails
       template 'presenters/presenter_spec.rb', "spec/presenters/#{options[:name]}_presenter_spec.rb"
     end
 
-    desc 'factory --name=factory-name', 'Generate a factory girl factory for use with rspec'
+    desc 'factory', 'Generate a factory_girl file for use with rspec'
     option :name, required: true
     def factory
       template 'rspec/factory.rb', "spec/factories/#{options[:name]}.rb"
@@ -100,7 +97,7 @@ gem 'rspec-rails', group: :test
       copy_file 'rspec/files.rb', 'spec/support/configs/files.rb'
     end
 
-    desc 'install_mailer --email=email@example.com', 'Generate sendgrid initializer and mail interceptor'
+    desc 'install_mailer', 'Generate sendgrid initializer and mail interceptor'
     option :email, required: true
     def install_mailer
       copy_file 'mailer/sendgrid.rb', 'config/initializers/sendgrid.rb'
@@ -115,7 +112,7 @@ gem 'rspec-rails', group: :test
       end
     end
 
-    desc 'config_env --name=host-localhost:3000', 'Add code to environment files. Host refers to url options'
+    desc 'config_env', 'Add code to environment files. Host refers to url options. Name option refers to mailer & controller default_url_options'
     option :name, required: true
     def config_env
       ENVIRONMENTS.each do |environment|
@@ -406,7 +403,6 @@ gem 'rspec-rails', group: :test
     end
 
     desc 'new_ui NAME', 'Create a new ui view'
-    option :name, required: true
     def new_ui(name)
       run "touch app/views/ui/#{name}.html.haml"
       say "DON'T FORGET: Restart Powify App"

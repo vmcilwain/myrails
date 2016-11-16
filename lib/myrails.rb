@@ -407,6 +407,21 @@ gem 'rspec-rails', group: :test
       run "touch app/views/ui/#{name}.html.haml"
       say "DON'T FORGET: Restart Powify App"
     end
+
+    desc 'engine', 'Configure rails engine for development with RSpec, Capybara and FactoryGirl'
+    option :name, required: true
+    def engine
+      inject_into_file "#{options[:name]}.gemspec", after: "s.license     = "MIT"\n" do <<-CODE
+  s.test_files = Dir["spec/**/*"]
+        CODE
+      end
+      inject_into_file "#{options[:name]}.gemspec", before: 'end' do <<-CODE
+  s.add_development_dependency 'rspec-rails'
+  s.add_development_dependency 'capybara'
+  s.add_development_dependency 'factory_girl_rails'
+        CODE
+      end
+    end
   end
 end
 

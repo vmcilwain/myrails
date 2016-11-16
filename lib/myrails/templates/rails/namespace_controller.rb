@@ -4,7 +4,7 @@ module <%= options[:namespace].camelize %>
     private
 
     def <%= options[:name].singularize.downcase %>
-      @<%= options[:name].singularize %> = <%= options[:name].capitalize%>.find(params[:id]) %>
+      @<%= options[:name].singularize %> = <%= options[:name].camelize.singularize %>.find(params[:id]) %>
     end
 
     def <%= options[:name].singularize.downcase %>_params

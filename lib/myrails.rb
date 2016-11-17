@@ -427,13 +427,23 @@ gem 'rspec-rails', group: :test
       run 'bundle'
       copy_file 'engines/rakefile', 'Rakefile'
       run 'rails g rspec:install'
-      gsub_file '# Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }', 'Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each { |f| require f }'
+      gsub_file 'spec/rails_helper.rb', "# Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }", "Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }"
 
       inject_into_file 'spec/rails_helper.rb', after: "RSpec.configure do |config|\n" do <<-CODE
   config.mock_with :rspec
   config.infer_base_class_for_anonymous_controllers = false
   config.order = "random"
       CODE
+      end
+
+      inject_into_file "lib/#{options[:name]}/engine.rb", after: "class Engine < ::Rails::Engine\n" do <<-CODE
+    config.generators do |g|
+      g.test_framework :rspec, :fixture => false
+      g.fixture_replacement :factory_girl, :dir => 'spec/factories'
+      g.assets false
+      g.helper false
+    end
+        CODE
       end
     end
   end

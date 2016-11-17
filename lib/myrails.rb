@@ -408,9 +408,10 @@ gem 'rspec-rails', group: :test
       say "DON'T FORGET: Restart Powify App"
     end
 
-    desc 'engine', 'Configure rails engine for development with RSpec, Capybara and FactoryGirl'
+    desc 'engine(full | mountable)', 'Configure rails engine for development with RSpec, Capybara and FactoryGirl'
     option :name, required: true
-    def engine
+    def engine(etype='full')
+      run "rails plugin new #{options[:name]} --dummy-path=spec/dummy --skip-test-unit --#{etype}"
       gsub_file "#{options[:name]}.gemspec", 's.homepage    = "TODO"', 's.homepage    = "http://TBD.com"'
 
       gsub_file "#{options[:name]}.gemspec", 's.summary     = "TODO: Summary of YaRoles."', 's.summary     = "Summary of YaRoles."'

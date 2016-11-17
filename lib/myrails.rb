@@ -411,7 +411,12 @@ gem 'rspec-rails', group: :test
     desc 'engine', 'Configure rails engine for development with RSpec, Capybara and FactoryGirl'
     option :name, required: true
     def engine
-      #need to add updates to the todos in order for bundler to run
+      gsub_file "#{options[:name]}.gemspec", 's.homepage    = "TODO"', 's.homepage    = "http://TBD.com"'
+
+      gsub_file "#{options[:name]}.gemspec", 's.summary     = "TODO: Summary of YaRoles."', 's.summary     = "Summary of YaRoles."'
+
+      gsub_file "#{options[:name]}.gemspec", 's.description = "TODO: Description of YaRoles."', 's.description = "Description of YaRoles."'
+
       inject_into_file "#{options[:name]}.gemspec", after: "s.license     = "MIT"\n" do <<-CODE
   s.test_files = Dir["spec/**/*"]
         CODE

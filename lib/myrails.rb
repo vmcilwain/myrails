@@ -432,17 +432,40 @@ gem 'rspec-rails', group: :test
   s.add_development_dependency 'rspec-rails'
   s.add_development_dependency 'capybara'
   s.add_development_dependency 'factory_girl_rails'
+  s.add_development_dependency  "faker"
+  s.add_development_dependency  "byebug"
+  s.add_development_dependency  'rails-controller-testing'
+  s.add_development_dependency  'pundit-matchers'
+  s.add_development_dependency  "simplecov"
+  s.add_development_dependency  "shoulda-matchers"
+  s.add_development_dependency  "database_cleaner"
+  s.add_dependency 'pundit'
+  s.add_dependency 'bootstrap-sass', '~> 3.3.6'
+  s.add_dependency 'autoprefixer-rails'
+  s.add_dependency "haml-rails"
+  s.add_dependency "font-awesome-rails"
+  s.add_dependency 'record_tag_helper'
         CODE
       end
 
       run 'bundle'
-
+      copy_file 'rspec/database_cleaner.rb', 'spec/configs/database_cleaner.rb'
+      copy_file 'rspec/factory_girl.rb', 'spec/configs/factory_gir.rb'
+      copy_file 'rspec/presenter.rb', 'spec/configs/presenter.rb'
+      copy_file 'rspec/shoulda_matchers', 'spec/configs/shoulda_matchers.rb'
       copy_file 'engines/rakefile', 'Rakefile'
-
       run 'rails g rspec:install'
-      gsub_file 'spec/rails_helper.rb', "# Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }", "Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }"
+
+      gsub_file 'spec/rails_helper.rb', "# Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }", "Dir[File.join(__dir__, 'support', '**', '*.rb')].each { |f| require f }"
 
       gsub_file 'spec/rails_helper.rb', "require File.expand_path('../../config/environment', __FILE__)", "require_relative 'dummy/config/environment'"
+
+      inject_into_file 'spec/rails_helper.rb', after: "require 'rspec/rails'\n" do <<-CODE
+require 'shoulda/matchers'
+require 'factory_girl'
+require 'database_cleaner'
+        CODE
+      end
       inject_into_file 'spec/rails_helper.rb', after: "RSpec.configure do |config|\n" do <<-CODE
   config.mock_with :rspec
   config.infer_base_class_for_anonymous_controllers = false

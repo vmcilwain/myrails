@@ -78,7 +78,7 @@ To release a new version,
 * tag the the code `git tag v1.0.0`
 * push the tag `git push --tags`
 * then run `bundle exec rake build`
-* `gem push pkg/myrails-verion`
+* `gem push pkg/myrails-version`
 
 Which will push the `.gem` file to [rubygems.org](https://rubygems.org).
 

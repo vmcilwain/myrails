@@ -436,11 +436,13 @@ gem 'rspec-rails', group: :test
       end
 
       run 'bundle'
+
       copy_file 'engines/rakefile', 'Rakefile'
 
       run 'rails g rspec:install'
       gsub_file 'spec/rails_helper.rb', "# Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }", "Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }"
 
+      gsub_file 'spec/rails_helper.rb', "require File.expand_path('../../config/environment', __FILE__)", "require_relative 'dummy/config/environment'"
       inject_into_file 'spec/rails_helper.rb', after: "RSpec.configure do |config|\n" do <<-CODE
   config.mock_with :rspec
   config.infer_base_class_for_anonymous_controllers = false

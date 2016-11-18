@@ -1,6 +1,6 @@
-require_relative "../lib/myrails/version"
 require 'thor'
 require 'active_support/all'
+require_relative "../lib/myrails/version"
 
 module Myrails
   class Myrails < Thor
@@ -408,22 +408,27 @@ gem 'rspec-rails', group: :test
       say "DON'T FORGET: Restart Powify App"
     end
 
-    desc 'engine(full | mountable)', 'Configure rails engine for development with RSpec, Capybara and FactoryGirl'
+    desc 'engine(full | mountable)', 'Generate a full or mountable engine. default: mountable'
     option :name, required: true
-    def engine(etype='full')
+    def engine(etype='mountable')
       run "rails plugin new #{options[:name]} --dummy-path=spec/dummy --skip-test-unit --#{etype}"
+    end
+
+    desc 'engine_setup', 'Configure rails engine for development with RSpec, Capybara and FactoryGirl'
+    option :name, required: true
+    def engine_setup
       gsub_file "#{options[:name]}.gemspec", 's.homepage    = "TODO"', 's.homepage    = "http://TBD.com"'
 
-      gsub_file "#{options[:name]}.gemspec", 's.summary     = "TODO: Summary of YaRoles."', 's.summary     = "Summary of YaRoles."'
+      gsub_file "#{options[:name]}.gemspec", "s.summary     = \"TODO: Summary of #{options[:name].camelize}.\"", "s.summary     = \"Summary of #{options[:name].camelize}.\""
 
-      gsub_file "#{options[:name]}.gemspec", 's.description = "TODO: Description of YaRoles."', 's.description = "Description of YaRoles."'
+      gsub_file "#{options[:name]}.gemspec", "s.description = \"TODO: Description of #{options[:name].camelize}.\"", "s.description = \"Description of #{options[:name].camelize}.\""
 
-      inject_into_file "#{options[:name]}.gemspec", after: "s.license     = "MIT"\n" do <<-CODE
+      inject_into_file "#{options[:name]}.gemspec", after: "s.license     = \"MIT\"\n" do <<-CODE
   s.test_files = Dir["spec/**/*"]
         CODE
       end
 
-      inject_into_file "#{options[:name]}.gemspec", before: 'end' do <<-CODE
+      inject_into_file "#{options[:name]}.gemspec", after: "s.add_development_dependency \"sqlite3\"\n" do <<-CODE
   s.add_development_dependency 'rspec-rails'
   s.add_development_dependency 'capybara'
   s.add_development_dependency 'factory_girl_rails'
@@ -432,6 +437,7 @@ gem 'rspec-rails', group: :test
 
       run 'bundle'
       copy_file 'engines/rakefile', 'Rakefile'
+
       run 'rails g rspec:install'
       gsub_file 'spec/rails_helper.rb', "# Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }", "Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }"
 
@@ -452,6 +458,7 @@ gem 'rspec-rails', group: :test
         CODE
       end
     end
+
   end
 end
 

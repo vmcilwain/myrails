@@ -87,6 +87,7 @@ gem 'rspec-rails', group: :test
       end
       run 'bundle install'
       run 'rails g rspec:install'
+      install_rails_helper
       copy_file 'rspec/database_cleaner.rb', "spec/support/configs/database_cleaner.rb"
       copy_file 'rspec/factory_girl.rb', 'spec/support/configs/factory_girl.rb'
       copy_file 'rspec/shoulda_matchers.rb', 'spec/support/configs/shoulda_matchers.rb'
@@ -503,6 +504,20 @@ require 'database_cleaner'
       copy_file 'rspec/request_shared_example.rb', 'spec/support/request_shared_examples.rb'
     end
 
+    desc 'auto_install', 'Run the most common actions in the right order'
+    def base_install
+      install_gems
+      install_application_helper
+      install_assets
+      install_layout
+      install_css
+      install_footer
+      install_ui
+      install_pundit
+      install_rspec
+      install_footnotes
+      git_init
+    end
   end
 end
 

@@ -14,7 +14,7 @@ This gem is not compatible with ruby 2.3 (yet).
 
 Use 1.1.1 if you are primarily developing in rails 3 & 4
 
-Use 2.x.x if are primarily developing in rails 5
+Use the latest version if are primarily developing in rails 5
 
 ## Examples
 

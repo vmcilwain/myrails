@@ -471,6 +471,7 @@ require 'factory_girl'
 require 'database_cleaner'
         CODE
       end
+
       inject_into_file 'spec/rails_helper.rb', after: "RSpec.configure do |config|\n" do <<-CODE
   config.mock_with :rspec
   config.infer_base_class_for_anonymous_controllers = false
@@ -489,6 +490,11 @@ require 'database_cleaner'
       end
     end
 
+    desc 'shared_example', 'Generates an RSpec shared example template in the support directory'
+    option :text, required: true
+    def shared_example
+      template 'rspec/shared_example.rb', 'spec/support/shared_examples.rb'
+    end
   end
 end
 

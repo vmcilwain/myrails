@@ -336,7 +336,7 @@ gem 'rspec-rails', group: :test
       copy_file(themes[idx], "app/assets/stylesheets/#{File.basename(themes[idx])}")
 
       inject_into_file 'app/assets/stylesheets/application.css.sass', before: "@import will_paginate" do <<-CODE
-  @import #{File.basename(themes[idx], '.*')}
+@import #{File.basename(themes[idx], '.*')}
         CODE
       end
     end

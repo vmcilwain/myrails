@@ -220,7 +220,7 @@ gem 'rspec-rails', group: :test
     desc 'install_pundit', 'Install pundit gem and generate pundit files and application controller code'
     def install_pundit
       insert_into_file 'Gemfile', after: "gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]\n" do <<-CODE
-    gem 'pundit'
+gem 'pundit'
       CODE
       end
 
@@ -232,27 +232,27 @@ gem 'rspec-rails', group: :test
       run 'bundle update'
       run 'rails g pundit:install'
 
-      inject_into_file 'app/controllers/application_controller.rb', before: '# Prevent CSRF attacks by raising an exception.' do <<-CODE
-    # Add pundit authorization
-    include Pundit
+      inject_into_file 'app/controllers/application_controller.rb', after: "protect_from_forgery with: :exception\n" do <<-CODE
+  # Add pundit authorization
+  include Pundit
       CODE
       end
 
-      inject_into_file 'app/controllers/application_controller.rb', after: "protect_from_forgery with: :exception\n" do <<-CODE
-    # Rescue from pundit error
-    # (see #user_not_authorized)
-    rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
+      inject_into_file 'app/controllers/application_controller.rb', after: "rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized\n" do <<-CODE
+  # Rescue from pundit error
+  # (see #user_not_authorized)
+  rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
       CODE
       end
 
       inject_into_file 'app/controllers/application_controller.rb', after: "private\n" do <<-CODE
-    # Method to gracefully let a user know they are are not authorized
-    #
-    # @return flash [Hash] the action notice
-    def user_not_authorized
-      flash[:alert] = "You are not authorized to perform this action."
-      redirect_to home_path
-    end
+  # Method to gracefully let a user know they are are not authorized
+  #
+  # @return flash [Hash] the action notice
+  def user_not_authorized
+    flash[:alert] = "You are not authorized to perform this action."
+    redirect_to home_path
+  end
       CODE
       end
     end
@@ -308,7 +308,7 @@ gem 'rspec-rails', group: :test
       run 'bundle install'
 
       insert_into_file 'app/controllers/application_controller.rb', before: 'end' do <<-CODE
-    private
+  private
         CODE
       end
     end
@@ -336,7 +336,7 @@ gem 'rspec-rails', group: :test
       copy_file(themes[idx], "app/assets/stylesheets/#{File.basename(themes[idx])}")
 
       inject_into_file 'app/assets/stylesheets/application.css.sass', before: "@import will_paginate" do <<-CODE
-  @import #{File.basename(themes[idx], '.*')}
+@import #{File.basename(themes[idx], '.*')}
         CODE
       end
     end
@@ -369,6 +369,11 @@ gem 'rspec-rails', group: :test
       copy_file 'layout/_info_messages.html.haml', 'app/views/layouts/_info_messages.html.haml'
       copy_file 'layout/_success_message.html.haml', 'app/views/layouts/_success_message.html.haml'
       copy_file 'layout/_error_messages.html.haml', 'app/views/layouts/_error_messages.html.haml'
+      copy_file 'layout/_footer.html.haml', 'app/views/layouts/_footer.html.haml'
+      insert_into_file 'app/controllers/application_controller.rb', after: "class ApplicationController < ActionController::Base\n" do <<-CODE
+  add_flash_types :error, :success
+        CODE
+      end
     end
 
     desc 'install_heroku', 'setup application for use with heroku using sqlite3 for development'

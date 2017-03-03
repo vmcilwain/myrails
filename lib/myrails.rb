@@ -246,13 +246,13 @@ gem 'pundit'
       end
 
       inject_into_file 'app/controllers/application_controller.rb', after: "private\n" do <<-CODE
-    # Method to gracefully let a user know they are are not authorized
-    #
-    # @return flash [Hash] the action notice
-    def user_not_authorized
-      flash[:alert] = "You are not authorized to perform this action."
-      redirect_to home_path
-    end
+  # Method to gracefully let a user know they are are not authorized
+  #
+  # @return flash [Hash] the action notice
+  def user_not_authorized
+    flash[:alert] = "You are not authorized to perform this action."
+    redirect_to home_path
+  end
       CODE
       end
     end
@@ -308,7 +308,7 @@ gem 'pundit'
       run 'bundle install'
 
       insert_into_file 'app/controllers/application_controller.rb', before: 'end' do <<-CODE
-    private
+  private
         CODE
       end
     end
@@ -370,7 +370,7 @@ gem 'pundit'
       copy_file 'layout/_success_message.html.haml', 'app/views/layouts/_success_message.html.haml'
       copy_file 'layout/_error_messages.html.haml', 'app/views/layouts/_error_messages.html.haml'
       copy_file 'layout/_footer.html.haml', 'app/views/layouts/_footer.html.haml'
-      insert_into_file 'app/controllers/application_controller', after: "class ApplicationController < ActionController::Base\n" do <<-CODE
+      insert_into_file 'app/controllers/application_controller.rb', after: "class ApplicationController < ActionController::Base\n" do <<-CODE
   add_flash_types :error, :success
         CODE
       end

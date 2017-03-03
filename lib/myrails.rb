@@ -369,6 +369,7 @@ gem 'rspec-rails', group: :test
       copy_file 'layout/_info_messages.html.haml', 'app/views/layouts/_info_messages.html.haml'
       copy_file 'layout/_success_message.html.haml', 'app/views/layouts/_success_message.html.haml'
       copy_file 'layout/_error_messages.html.haml', 'app/views/layouts/_error_messages.html.haml'
+      copy_file 'layout/_footer.html.haml', 'app/views/layouts/_footer.html.haml'
     end
 
     desc 'install_heroku', 'setup application for use with heroku using sqlite3 for development'

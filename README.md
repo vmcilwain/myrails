@@ -69,7 +69,7 @@ simple type `myrails` to see the help menu
 # Example for generating a presenter class
 myrails presenter --name=post
 ```
-This generates a PostPresenter class in app/presenters that inherites from app/presenters/base_presenter.rb to be used in views. This also generates a spec/presenters/post_presenter_spec.rb file for testing.
+This generates a PostPresenter class in app/presenters that inherits from app/presenters/base_presenter.rb to be used in views. This also generates a spec/presenters/post_presenter_spec.rb file for testing.
 
 ## Development
 

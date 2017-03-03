@@ -495,6 +495,14 @@ require 'database_cleaner'
     def shared_example
       template 'rspec/shared_example.rb', 'spec/support/shared_examples.rb'
     end
+
+    desc 'request', 'Generates an RSpec request spec'
+    option :name, required: true
+    def request
+      template 'rspec/request.rb', "spec/requests/#{options[:name]}_spec.rb"
+      copy_file 'rspec/request_shared_example.rb', 'spec/support/request_shared_examples.rb'
+    end
+
   end
 end
 

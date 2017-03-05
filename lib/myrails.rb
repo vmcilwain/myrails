@@ -98,15 +98,15 @@ gem 'rspec-rails', group: :test
       copy_file 'rspec/files.rb', 'spec/support/configs/files.rb'
     end
 
-    desc 'install_mailer', 'Generate sendgrid initializer and mail interceptor'
+    desc 'sendgrid', 'Generate sendgrid initializer and mail interceptor'
     option :email, required: true
-    def install_mailer
+    def sendgrid
       copy_file 'mailer/sendgrid.rb', 'config/initializers/sendgrid.rb'
       template 'mailer/dev_mail_interceptor.rb', 'app/mailers/dev_mail_interceptor.rb'
       ENVIRONMENTS.each do |environment|
         unless environment == 'production'
-          inject_into_file "config/environments/#{environment}.rb", after: "# config.action_view.raise_on_missing_translations = true\n" do <<-CODE
-    ActionMailer::Base.register_interceptor(DevMailInterceptor)
+          inject_into_file "config/environments/#{environment}.rb", after: "Rails.application.configure do\n" do <<-CODE
+  ActionMailer::Base.register_interceptor(DevMailInterceptor)
             CODE
           end
         end

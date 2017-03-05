@@ -413,7 +413,7 @@ gem 'rspec-rails', group: :test
     end
 
     desc 'use_application_yml', 'creates and loads config/application.yml'
-    def use_application_yml
+    def use_gloabl_variables
       copy_file 'initializers/application_vars.rb', 'config/initializers/application_vars.rb'
       copy_file 'rails/application.yml', 'config/application.yml'
     end

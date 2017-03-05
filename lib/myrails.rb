@@ -9,7 +9,7 @@ module Myrails
     TEMPLATES = source_root
     ENVIRONMENTS = %w(development test production)
 
-    desc 'model', 'Generates and empty rails model with the given name and its related spec file Use --namespace=namespace to create a namespaced model'
+    desc 'model', "Generates a rails model with the given name along with its related spec file and namespace prefix for table creation. Use '/' to create a namespaced model"
     option :name, required: true
     def model
       template 'rails/model.rb', "app/models/#{options[:name].downcase}.rb"
@@ -17,7 +17,7 @@ module Myrails
       template 'rspec/model.rb', "spec/models/#{options[:name].downcase}_spec.rb"
     end
 
-    desc 'controller', 'Generate a rails controller with the given name along with boiler plate code and related spec file. Add --namespace=NAME to create a namespaced controller'
+    desc 'controller', "Generates a rails controller with the given name along with related spec file. Use '/' to create a namespaced controller"
     option :name, required: true
     def controller
       template 'rails/controller.rb', "app/controllers/#{options[:name].downcase.pluralize}_controller.rb"
@@ -29,14 +29,14 @@ module Myrails
       run "mkdir -p app/views/#{options[:name].downcase.pluralize}"
     end
 
-    desc 'policy', 'Generate a pundit policy with the given name and a related spec file'
+    desc 'policy', "Generates a pundit policy with the given name and a related spec file. Use '/' to create a namespaced policy"
     option :name, required: true
     def policy
       template 'rails/pundit.rb', "app/policies/#{options[:name].downcase}_policy.rb"
       template 'rspec/pundit.rb', "spec/policies/#{options[:name].downcase}_policy_spec.rb"
     end
 
-    desc 'presenter', 'Generate a presenter class with the given name and a related spec file'
+    desc 'presenter', "Generates a presenter class with the given name and a related spec file. Use '/' to create a namespaced presenter"
     option :name, required: true
     def presenters
       copy_file 'presenters/base.rb', 'app/presenters/base_presenter.rb'
@@ -45,7 +45,7 @@ module Myrails
       template 'presenters/presenter_spec.rb', "spec/presenters/#{options[:name].downcase}_presenter_spec.rb"
     end
 
-    desc 'factory', 'Generate a factory_girl file for use with rspec'
+    desc 'factory', "Generates a factory_girl factory in the spec/factories directory. Use '/' to create a namespaced factory"
     option :name, required: true
     def factory
       template 'rspec/factory.rb', "spec/factories/#{options[:name].downcase}.rb"

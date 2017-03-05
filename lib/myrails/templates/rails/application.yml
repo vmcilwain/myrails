@@ -1,7 +1,10 @@
 # use: ENV['email']
+# Add code to place file in config/initializers
+# Load application ENV vars and merge with existing ENV vars. Loaded here so can use values in initializers.
+# ENV.update YAML.load_file('config/application.yml')[Rails.env] rescue {}
 defaults: &defaults
   email: dev@example.com
-  secret: foo123
+  secret: mypassword
 
 development:
   <<: *defaults
@@ -13,4 +16,4 @@ test:
 production:
   <<: *defaults
   email: info@example.com
-  secret: 321oof
+  secret: mypassword

@@ -411,6 +411,12 @@ gem 'rspec-rails', group: :test
       run "touch app/views/ui/#{name}.html.haml"
       say "DON'T FORGET: Restart Powify App"
     end
+
+    desc 'use_application_yml', 'creates and loads config/application.yml'
+    def use_application_yml
+      copy_file 'initializers/application_vars.rb', 'config/initializers/application_vars.rb'
+      copy_file 'rails/application.yml', 'config/application.yml'
+    end
   end
 end
 

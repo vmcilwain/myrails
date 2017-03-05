@@ -412,8 +412,8 @@ gem 'rspec-rails', group: :test
       say "DON'T FORGET: Restart Powify App"
     end
 
-    desc 'use_application_yml', 'creates and loads config/application.yml'
-    def use_gloabl_variables
+    desc 'use_global_varables', 'creates and loads config/application.yml'
+    def use_global_variables
       copy_file 'initializers/application_vars.rb', 'config/initializers/application_vars.rb'
       copy_file 'rails/application.yml', 'config/application.yml'
     end

@@ -1,5 +1,5 @@
 FactoryGirl.define do
-  factory :<%= options[:name] %> do
+  factory :<%= options[:name].gsub("/", "_") %>, class: "<%= options[:name].camelize %>" do
 
   end
 end

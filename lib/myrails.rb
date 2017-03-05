@@ -11,53 +11,44 @@ module Myrails
 
     desc 'model', 'Generates and empty rails model with the given name and its related spec file Use --namespace=namespace to create a namespaced model'
     option :name, required: true
-    option :namespace
     def model
-      if options[:namespace]
-        template 'rails/namespace_model.rb', "app/models/#{options[:namespace]}/#{options[:name]}.rb"
-        template 'rspec/namespace_model.rb', "spec/models/#{options[:namespace]}/#{options[:name]}_spec.rb"
-      else
-        template 'rails/model.rb', "app/models/#{options[:name]}.rb"
-        template 'rspec/model.rb', "spec/models/#{options[:name]}_spec.rb"
-      end
+      template 'rails/model.rb', "app/models/#{options[:name].downcase}.rb"
+      template 'rails/namespace_model.rb', "app/models/#{options[:name].split("/").first.singularize.downcase}.rb" if options[:name].include?("/")
+      template 'rspec/model.rb', "spec/models/#{options[:name].downcase}_spec.rb"
     end
 
     desc 'controller', 'Generate a rails controller with the given name along with boiler plate code and related spec file. Add --namespace=NAME to create a namespaced controller'
     option :name, required: true
-    option :namespace
     def controller
-      if options[:namespace]
-        template 'rails/namespace_controller.rb', "app/controllers/#{options[:namespace]}/#{options[:name].pluralize}_controller.rb"
-        template 'rails/parent_namespace_controller.rb', "app/controllers/#{options[:namespace]}/#{options[:namespace]}_controller.rb"
-        template 'rspec/namespace_controller.rb', "spec/controllers/#{options[:namespace]}/#{options[:name].pluralize}_controller_spec.rb"
-        run "mkdir -p app/views/#{options[:namespace]}/#{options[:name].pluralize}"
-      else
-        template 'rails/controller.rb', "app/controllers/#{options[:name].pluralize}_controller.rb"
-        template 'rspec/controller.rb', "spec/controllers/#{options[:name].pluralize}_controller_spec.rb"
-        run "mkdir -p app/views/#{options[:name].pluralize}"
+      template 'rails/controller.rb', "app/controllers/#{options[:name].downcase.pluralize}_controller.rb"
+      if options[:name].include?("/")
+        parent, child = options[:name].split("/")
+        template 'rails/namespace_controller.rb', "app/controllers/#{parent}/#{parent.downcase}_controller.rb"
       end
+      template 'rspec/controller.rb', "spec/controllers/#{options[:name].downcase.pluralize}_controller_spec.rb"
+      run "mkdir -p app/views/#{options[:name].downcase.pluralize}"
     end
 
     desc 'policy', 'Generate a pundit policy with the given name and a related spec file'
     option :name, required: true
     def policy
-      template 'rails/pundit.rb', "app/policies/#{options[:name]}_policy.rb"
-      template 'rspec/pundit.rb', "spec/policies/#{options[:name]}_policy_spec.rb"
+      template 'rails/pundit.rb', "app/policies/#{options[:name].downcase}_policy.rb"
+      template 'rspec/pundit.rb', "spec/policies/#{options[:name].downcase}_policy_spec.rb"
     end
 
     desc 'presenter', 'Generate a presenter class with the given name and a related spec file'
     option :name, required: true
     def presenters
       copy_file 'presenters/base.rb', 'app/presenters/base_presenter.rb'
-      template 'presenters/presenter.rb', "app/presenters/#{options[:name]}_presenter.rb"
+      template 'presenters/presenter.rb', "app/presenters/#{options[:name].downcase}_presenter.rb"
       copy_file 'presenters/presenter_config.rb', 'spec/support/configs/presenter.rb'
-      template 'presenters/presenter_spec.rb', "spec/presenters/#{options[:name]}_presenter_spec.rb"
+      template 'presenters/presenter_spec.rb', "spec/presenters/#{options[:name].downcase}_presenter_spec.rb"
     end
 
     desc 'factory', 'Generate a factory_girl file for use with rspec'
     option :name, required: true
     def factory
-      template 'rspec/factory.rb', "spec/factories/#{options[:name]}.rb"
+      template 'rspec/factory.rb', "spec/factories/#{options[:name].downcase}.rb"
     end
 
     desc 'install_application_helper', 'Replace current application helper with one that has commonly used code'

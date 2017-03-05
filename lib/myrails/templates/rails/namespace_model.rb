@@ -1,4 +1,5 @@
-module <%= options[:namespace].camelize %>
-  class <%= options[:name].camelize %> < ApplicationRecord
+module <%= options[:name].split("/").first.camelize %>
+  def self.table_name_prefix
+    '<%= options[:name].split("/").first.downcase %>_'
   end
 end

@@ -302,6 +302,21 @@ module Myrails
         run 'rails generate rails_footnotes:install'
       end
 
+      desc 'base_install', 'Run the most common actions in the right order'
+      def base_install
+        install_gems
+        install_application_helper
+        install_assets
+        install_layout
+        install_css
+        install_footer
+        install_ui
+        install_pundit
+        install_rspec
+        install_footnotes
+        git_init
+        say 'Dont forget to run config_env'
+      end
     end
 
     desc 'model', "Generates a rails model with the given name along with its related spec file and namespace prefix for table creation. Use '/' to create a namespaced model"
@@ -496,22 +511,6 @@ require 'database_cleaner'
     def request
       template 'rspec/request.rb', "spec/requests/#{options[:name]}_spec.rb"
       copy_file 'rspec/request_shared_example.rb', 'spec/support/request_shared_examples.rb'
-    end
-
-    desc 'base_install', 'Run the most common actions in the right order'
-    def base_install
-      install_gems
-      install_application_helper
-      install_assets
-      install_layout
-      install_css
-      install_footer
-      install_ui
-      install_pundit
-      install_rspec
-      install_footnotes
-      git_init
-      say 'Dont forget to run config_env'
     end
 
     desc 'install NAME', 'Install generally used gems and customized files'

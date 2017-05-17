@@ -9,6 +9,301 @@ module Myrails
     TEMPLATES = source_root
     ENVIRONMENTS = %w(development test production)
 
+    no_tasks do
+      desc 'install_application_helper', 'Replace current application helper with one that has commonly used code'
+      def install_application_helper
+        copy_file 'rails/application_helper.rb', 'app/helpers/application_helper.rb'
+      end
+
+      desc 'install_gems', 'Add & Install gems that I commonly use'
+      def install_gems
+        insert_into_file 'Gemfile', before: "group :development, :test do" do <<-CODE
+    group :test do
+      gem 'simplecov'
+      gem 'shoulda-matchers'
+      gem 'factory_girl_rails'
+      gem 'database_cleaner'
+      gem 'capybara'
+      gem 'selenium-webdriver'
+      gem 'chromedriver-helper'
+      gem 'launchy'
+      gem 'rails-controller-testing'
+    end
+
+      CODE
+      end
+
+      insert_into_file 'Gemfile', after: "group :development, :test do\n" do <<-CODE
+      gem 'faker'
+      gem 'yard'
+      gem 'letter_opener'
+      gem "rails-erd"
+      CODE
+      end
+
+      insert_into_file 'Gemfile', after: "gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]\n" do <<-CODE
+    gem 'node'
+    gem 'bootstrap-sass', '~> 3.3.1'
+    gem 'autoprefixer-rails'
+    gem 'haml-rails'
+    gem "ransack"
+    gem 'will_paginate'
+    gem "font-awesome-rails"
+    gem 'trix'
+    gem 'record_tag_helper'
+        CODE
+        end
+        run 'bundle install'
+
+        insert_into_file 'app/controllers/application_controller.rb', before: 'end' do <<-CODE
+    private
+          CODE
+        end
+      end
+
+      desc 'install_assets', 'Generate common asset pipeline files'
+      def install_assets
+        run "rm app/assets/stylesheets/application.css"
+        copy_file 'assets/application.css.sass', 'app/assets/stylesheets/application.css.sass'
+        copy_file 'assets/application.js', 'app/assets/javascripts/application.js'
+        copy_file 'assets/animate.scss', 'app/assets/stylesheets/animate.scss'
+        copy_file 'assets/will_paginate.scss', 'app/assets/stylesheets/will_paginate.scss'
+      end
+
+
+      desc 'install_css', 'Generate & include application css theme'
+      def install_css
+        themes = Dir[File.join(TEMPLATES, 'assets', 'bootstrap_themes', '*')]
+
+        themes.each_with_index do |theme, index|
+          say "[#{index}] #{File.basename(theme,'.*')}"
+        end
+
+        idx = ask("Choose a color theme (by number) for the application. Default: 'spacelab'")
+        idx = idx.empty? ? themes.index{|theme| theme if theme.include?('spacelab')} : idx.to_i
+        copy_file(themes[idx], "app/assets/stylesheets/#{File.basename(themes[idx])}")
+
+        inject_into_file 'app/assets/stylesheets/application.css.sass', before: "@import will_paginate" do <<-CODE
+  @import #{File.basename(themes[idx], '.*')}
+          CODE
+        end
+      end
+
+      desc 'install_footer', 'Generate & include application footer'
+      def install_footer
+        footers = Dir[File.join(TEMPLATES, 'layout', 'footers', '*.haml')]
+        footers_css = Dir[File.join(TEMPLATES, 'layout', 'footers', 'css', '*')]
+
+        footers.each_with_index do |footer, index|
+          say "[#{index}] #{File.basename(footer,'.html.*')}"
+        end
+
+        idx = ask("Chose a footer theme (by number) for the application. Deault: 'footer-distributed (Basic)'")
+        idx = idx.empty? ? footers.index{|footer| footer if footer.include?('footer-distributed.html.haml')} : idx.to_i
+        copy_file footers[idx], "app/views/layouts/_footer.html.haml"
+        copy_file footers_css[idx], "app/assets/stylesheets/#{File.basename(footers_css[idx])}"
+
+        inject_into_file 'app/assets/stylesheets/application.css.sass', after: "@import animate\n" do <<-CODE
+    @import #{File.basename(footers_css[idx], '.*')}
+          CODE
+        end
+      end
+
+      desc 'install_layout', 'Generate common layout files'
+      def install_layout
+        run 'rm app/views/layouts/application.html.erb'
+        template 'layout/application.html.haml', 'app/views/layouts/application.html.haml'
+        template 'layout/_nav.html.haml', 'app/views/layouts/_nav.html.haml'
+        copy_file 'layout/_info_messages.html.haml', 'app/views/layouts/_info_messages.html.haml'
+        copy_file 'layout/_success_message.html.haml', 'app/views/layouts/_success_message.html.haml'
+        copy_file 'layout/_error_messages.html.haml', 'app/views/layouts/_error_messages.html.haml'
+        copy_file 'layout/_footer.html.haml', 'app/views/layouts/_footer.html.haml'
+        insert_into_file 'app/controllers/application_controller.rb', after: "class ApplicationController < ActionController::Base\n" do <<-CODE
+    add_flash_types :error, :success
+          CODE
+        end
+      end
+
+      desc 'install_heroku', 'setup application for use with heroku using sqlite3 for development'
+      def install_heroku
+        insert_into_file 'Gemfile', before: "group :development, :test do\n" do <<-CODE
+    group :production do
+      gem 'pg'
+      gem 'rails_12factor'
+    end
+
+          CODE
+          end
+          copy_file 'db/sqlite3_database.yml', 'config/database.yml'
+          copy_file 'heroku/Procfile', 'Procfile'
+          copy_file 'heroku/puma.rb', 'config/puma.rb'
+      end
+
+      desc 'git_init', "Initialize git with some files autormoatically ignored"
+      def git_init
+        run 'git init'
+        run 'echo /coverage >> .gitignore'
+        run 'echo /config/application.yml >> .gitignore'
+        run 'git add --all'
+        run "git commit -m 'initial commit'"
+      end
+
+      desc 'install_ui', 'Generate UI files and code for prototyping views in app/views/ui'
+      def install_ui
+        copy_file 'ui/ui_controller.rb', 'app/controllers/ui_controller.rb'
+        copy_file 'ui/index.html.haml', 'app/views/ui/index.html.haml'
+        inject_into_file 'config/routes.rb', after: "Rails.application.routes.draw do\n" do <<-CODE
+          # Requires an application restart everytime a new page is added.
+          Dir.glob('app/views/ui/*.html.haml').sort.each do |file|
+            action = File.basename(file,'.html.haml')
+            get \"ui/\#{action}\", controller: 'ui', action: action
+          end
+          CODE
+        end
+      end
+
+      desc 'install_rspec', 'Generate rspec structure & rspec configuration that I commonly use'
+      def install_rspec
+        insert_into_file 'Gemfile', after: "gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]\n" do <<-CODE
+  gem 'rspec-rails', group: :test
+        CODE
+        end
+        run 'bundle install'
+        run 'rails g rspec:install'
+        install_rails_helper
+        copy_file 'rspec/database_cleaner.rb', "spec/support/configs/database_cleaner.rb"
+        copy_file 'rspec/factory_girl.rb', 'spec/support/configs/factory_girl.rb'
+        copy_file 'rspec/shoulda_matchers.rb', 'spec/support/configs/shoulda_matchers.rb'
+        copy_file 'rspec/silence_backtrace.rb', 'spec/support/configs/silence_rspec_backtrace.rb'
+        copy_file 'rspec/javascript.rb', 'spec/support/configs/javascript.rb'
+        copy_file 'rspec/mailer.rb', 'spec/support/configs/mailer.rb'
+        copy_file 'rspec/router.rb', 'spec/support/configs/router.rb'
+        copy_file 'rspec/files.rb', 'spec/support/configs/files.rb'
+      end
+
+      desc 'install_rails_helper', 'Add code to rspec/rails_helper so rspec runs the way I like'
+      def install_rails_helper
+        inject_into_file "spec/rails_helper.rb", after: "require 'rspec/rails'\n" do <<-CODE
+      require 'simplecov'
+      SimpleCov.start
+      #use Chromedriver
+      unless ENV['NOCHROME']
+      Capybara.register_driver :selenium do |app|
+        Capybara::Selenium::Driver.new(app, :browser => :chrome)
+      end
+      end
+      CODE
+        end
+
+        gsub_file 'spec/rails_helper.rb', "# Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }", "Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }"
+
+        gsub_file "spec/rails_helper.rb", "config.use_transactional_fixtures = true", "config.use_transactional_fixtures = false"
+
+        inject_into_file 'spec/rails_helper.rb', after: "RSpec.configure do |config|\n" do <<-CODE
+      config.include(JavascriptHelper, type: :feature)
+      CODE
+        end
+      end
+
+      desc 'install_devise', 'Generate devise files'
+      def install_devise
+        insert_into_file 'Gemfile', after: "gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]\n" do <<-CODE
+      gem 'devise', '~> 4.2.0'
+        CODE
+        end
+        run 'bundle update'
+        copy_file 'rspec/devise.rb', 'spec/support/configs/devise.rb'
+
+        devise_model = ask("What would you like to call the devise model? Default: user")
+        devise_model = devise_model.empty? ? 'user' : devise_model
+        run 'rails generate devise:install'
+        run 'rake db:migrate'
+        run "rails generate devise #{devise_model}"
+        run 'rails generate devise:views'
+
+        inject_into_file 'app/controllers/application_controller.rb', before: 'protect_from_forgery with: :exception' do <<-CODE
+      # Devise authentication method
+      before_action :authenticate_#{devise_model}!
+        CODE
+        end
+
+        if File.exist?('app/controllers/ui_controller.rb')
+          inject_into_file 'app/controllers/ui_controller.rb', after: "class UiController < ApplicationController\n" do <<-CODE
+      skip_before_action :authenticate_#{devise_model}!
+          CODE
+          end
+        end
+
+        if yes?('Will you be needing registration params override? Answer "yes" if you will be adding attributes to the user model')
+          inject_into_file 'app/controllers/application_controller.rb',  after: "skip_before_action :authenticate_#{devise_model}!\n" do <<-CODE
+      # Before action include additional registration params
+      # (see #configure_permitted_parameters)
+      before_action :configure_permitted_parameters, if: :devise_controller?
+          CODE
+          end
+
+          inject_into_file 'app/controllers/application_controller.rb',  after: "private\n" do <<-CODE
+      # Register additional registration params
+      def configure_permitted_parameters
+        devise_parameter_sanitizer.permit(:sign_up, keys: [:attribute, :attribute])
+      end
+          CODE
+          end
+        end
+      end
+
+      desc 'install_pundit', 'Install pundit gem and generate pundit files and application controller code'
+      def install_pundit
+        insert_into_file 'Gemfile', after: "gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]\n" do <<-CODE
+      gem 'pundit'
+        CODE
+        end
+
+        insert_into_file 'Gemfile', before: "group :development, :test do" do <<-CODE
+      gem 'pundit-matchers', '~> 1.1.0'
+        CODE
+        end
+
+        run 'bundle update'
+        run 'rails g pundit:install'
+
+        inject_into_file 'app/controllers/application_controller.rb', after: "protect_from_forgery with: :exception\n" do <<-CODE
+      # Add pundit authorization
+      include Pundit
+        CODE
+        end
+
+        inject_into_file 'app/controllers/application_controller.rb', after: "rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized\n" do <<-CODE
+      # Rescue from pundit error
+      # (see #user_not_authorized)
+      rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
+        CODE
+        end
+
+        inject_into_file 'app/controllers/application_controller.rb', after: "private\n" do <<-CODE
+      # Method to gracefully let a user know they are are not authorized
+      #
+      # @return flash [Hash] the action notice
+      def user_not_authorized
+      flash[:alert] = "You are not authorized to perform this action."
+      redirect_to home_path
+      end
+        CODE
+        end
+      end
+
+      desc 'install_footnotes', 'Install rails-footnotes and run its generator'
+      def install_footnotes
+        insert_into_file 'Gemfile', after: "gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]\n" do <<-CODE
+      gem 'rails-footnotes'
+        CODE
+        end
+        run 'bundle install'
+        run 'rails generate rails_footnotes:install'
+      end
+
+    end
+
     desc 'model', "Generates a rails model with the given name along with its related spec file and namespace prefix for table creation. Use '/' to create a namespaced model"
     option :name, required: true
     def model
@@ -49,44 +344,6 @@ module Myrails
     option :name, required: true
     def factory
       template 'rspec/factory.rb', "spec/factories/#{options[:name].downcase}.rb"
-    end
-
-    desc 'install_application_helper', 'Replace current application helper with one that has commonly used code'
-    def install_application_helper
-      copy_file 'rails/application_helper.rb', 'app/helpers/application_helper.rb'
-    end
-
-    desc 'install_ui', 'Generate UI files and code for prototyping views in app/views/ui'
-    def install_ui
-      copy_file 'ui/ui_controller.rb', 'app/controllers/ui_controller.rb'
-      copy_file 'ui/index.html.haml', 'app/views/ui/index.html.haml'
-      inject_into_file 'config/routes.rb', after: "Rails.application.routes.draw do\n" do <<-CODE
-        # Requires an application restart everytime a new page is added.
-        Dir.glob('app/views/ui/*.html.haml').sort.each do |file|
-          action = File.basename(file,'.html.haml')
-          get \"ui/\#{action}\", controller: 'ui', action: action
-        end
-        CODE
-      end
-    end
-
-    desc 'install_rspec', 'Generate rspec structure & rspec configuration that I commonly use'
-    def install_rspec
-      insert_into_file 'Gemfile', after: "gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]\n" do <<-CODE
-gem 'rspec-rails', group: :test
-      CODE
-      end
-      run 'bundle install'
-      run 'rails g rspec:install'
-      install_rails_helper
-      copy_file 'rspec/database_cleaner.rb', "spec/support/configs/database_cleaner.rb"
-      copy_file 'rspec/factory_girl.rb', 'spec/support/configs/factory_girl.rb'
-      copy_file 'rspec/shoulda_matchers.rb', 'spec/support/configs/shoulda_matchers.rb'
-      copy_file 'rspec/silence_backtrace.rb', 'spec/support/configs/silence_rspec_backtrace.rb'
-      copy_file 'rspec/javascript.rb', 'spec/support/configs/javascript.rb'
-      copy_file 'rspec/mailer.rb', 'spec/support/configs/mailer.rb'
-      copy_file 'rspec/router.rb', 'spec/support/configs/router.rb'
-      copy_file 'rspec/files.rb', 'spec/support/configs/files.rb'
     end
 
     desc 'sendgrid', 'Generate sendgrid initializer and mail interceptor'
@@ -136,260 +393,6 @@ gem 'rspec-rails', group: :test
           end
         end
       end
-    end
-
-    desc 'install_rails_helper', 'Add code to rspec/rails_helper so rspec runs the way I like'
-    def install_rails_helper
-      inject_into_file "spec/rails_helper.rb", after: "require 'rspec/rails'\n" do <<-CODE
-  require 'simplecov'
-  SimpleCov.start
-  #use Chromedriver
-  unless ENV['NOCHROME']
-    Capybara.register_driver :selenium do |app|
-      Capybara::Selenium::Driver.new(app, :browser => :chrome)
-    end
-  end
-    CODE
-      end
-
-      gsub_file 'spec/rails_helper.rb', "# Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }", "Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }"
-
-      gsub_file "spec/rails_helper.rb", "config.use_transactional_fixtures = true", "config.use_transactional_fixtures = false"
-
-      inject_into_file 'spec/rails_helper.rb', after: "RSpec.configure do |config|\n" do <<-CODE
-    config.include(JavascriptHelper, type: :feature)
-    CODE
-      end
-    end
-
-    desc 'install_devise', 'Generate devise files'
-    def install_devise
-      insert_into_file 'Gemfile', after: "gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]\n" do <<-CODE
-    gem 'devise', '~> 4.2.0'
-      CODE
-      end
-      run 'bundle update'
-      copy_file 'rspec/devise.rb', 'spec/support/configs/devise.rb'
-
-      devise_model = ask("What would you like to call the devise model? Default: user")
-      devise_model = devise_model.empty? ? 'user' : devise_model
-      run 'rails generate devise:install'
-      run 'rake db:migrate'
-      run "rails generate devise #{devise_model}"
-      run 'rails generate devise:views'
-
-      inject_into_file 'app/controllers/application_controller.rb', before: 'protect_from_forgery with: :exception' do <<-CODE
-    # Devise authentication method
-    before_action :authenticate_#{devise_model}!
-      CODE
-      end
-
-      if File.exist?('app/controllers/ui_controller.rb')
-        inject_into_file 'app/controllers/ui_controller.rb', after: "class UiController < ApplicationController\n" do <<-CODE
-    skip_before_action :authenticate_#{devise_model}!
-        CODE
-        end
-      end
-
-      if yes?('Will you be needing registration params override? Answer "yes" if you will be adding attributes to the user model')
-        inject_into_file 'app/controllers/application_controller.rb',  after: "skip_before_action :authenticate_#{devise_model}!\n" do <<-CODE
-    # Before action include additional registration params
-    # (see #configure_permitted_parameters)
-    before_action :configure_permitted_parameters, if: :devise_controller?
-        CODE
-        end
-
-        inject_into_file 'app/controllers/application_controller.rb',  after: "private\n" do <<-CODE
-    # Register additional registration params
-    def configure_permitted_parameters
-      devise_parameter_sanitizer.permit(:sign_up, keys: [:attribute, :attribute])
-    end
-        CODE
-        end
-      end
-    end
-
-    desc 'install_pundit', 'Install pundit gem and generate pundit files and application controller code'
-    def install_pundit
-      insert_into_file 'Gemfile', after: "gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]\n" do <<-CODE
-gem 'pundit'
-      CODE
-      end
-
-      insert_into_file 'Gemfile', before: "group :development, :test do" do <<-CODE
-    gem 'pundit-matchers', '~> 1.1.0'
-      CODE
-      end
-
-      run 'bundle update'
-      run 'rails g pundit:install'
-
-      inject_into_file 'app/controllers/application_controller.rb', after: "protect_from_forgery with: :exception\n" do <<-CODE
-  # Add pundit authorization
-  include Pundit
-      CODE
-      end
-
-      inject_into_file 'app/controllers/application_controller.rb', after: "rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized\n" do <<-CODE
-  # Rescue from pundit error
-  # (see #user_not_authorized)
-  rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
-      CODE
-      end
-
-      inject_into_file 'app/controllers/application_controller.rb', after: "private\n" do <<-CODE
-  # Method to gracefully let a user know they are are not authorized
-  #
-  # @return flash [Hash] the action notice
-  def user_not_authorized
-    flash[:alert] = "You are not authorized to perform this action."
-    redirect_to home_path
-  end
-      CODE
-      end
-    end
-
-    desc 'install_footnotes', 'Install rails-footnotes and run its generator'
-    def install_footnotes
-      insert_into_file 'Gemfile', after: "gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]\n" do <<-CODE
-    gem 'rails-footnotes'
-      CODE
-      end
-      run 'bundle install'
-      run 'rails generate rails_footnotes:install'
-    end
-
-    desc 'install_gems', 'Add & Install gems that I commonly use'
-    def install_gems
-      insert_into_file 'Gemfile', before: "group :development, :test do" do <<-CODE
-  group :test do
-    gem 'simplecov'
-    gem 'shoulda-matchers'
-    gem 'factory_girl_rails'
-    gem 'database_cleaner'
-    gem 'capybara'
-    gem 'selenium-webdriver'
-    gem 'chromedriver-helper'
-    gem 'launchy'
-    gem 'rails-controller-testing'
-  end
-
-    CODE
-    end
-
-    insert_into_file 'Gemfile', after: "group :development, :test do\n" do <<-CODE
-    gem 'faker'
-    gem 'yard'
-    gem 'letter_opener'
-    gem "rails-erd"
-    CODE
-    end
-
-    insert_into_file 'Gemfile', after: "gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]\n" do <<-CODE
-  gem 'node'
-  gem 'bootstrap-sass', '~> 3.3.1'
-  gem 'autoprefixer-rails'
-  gem 'haml-rails'
-  gem "ransack"
-  gem 'will_paginate'
-  gem "font-awesome-rails"
-  gem 'trix'
-  gem 'record_tag_helper'
-      CODE
-      end
-      run 'bundle install'
-
-      insert_into_file 'app/controllers/application_controller.rb', before: 'end' do <<-CODE
-  private
-        CODE
-      end
-    end
-
-    desc 'install_assets', 'Generate common asset pipeline files'
-    def install_assets
-      run "rm app/assets/stylesheets/application.css"
-      copy_file 'assets/application.css.sass', 'app/assets/stylesheets/application.css.sass'
-      copy_file 'assets/application.js', 'app/assets/javascripts/application.js'
-      copy_file 'assets/animate.scss', 'app/assets/stylesheets/animate.scss'
-      copy_file 'assets/will_paginate.scss', 'app/assets/stylesheets/will_paginate.scss'
-    end
-
-
-    desc 'install_css', 'Generate & include application css theme'
-    def install_css
-      themes = Dir[File.join(TEMPLATES, 'assets', 'bootstrap_themes', '*')]
-
-      themes.each_with_index do |theme, index|
-        say "[#{index}] #{File.basename(theme,'.*')}"
-      end
-
-      idx = ask("Choose a color theme (by number) for the application. Default: 'spacelab'")
-      idx = idx.empty? ? themes.index{|theme| theme if theme.include?('spacelab')} : idx.to_i
-      copy_file(themes[idx], "app/assets/stylesheets/#{File.basename(themes[idx])}")
-
-      inject_into_file 'app/assets/stylesheets/application.css.sass', before: "@import will_paginate" do <<-CODE
-@import #{File.basename(themes[idx], '.*')}
-        CODE
-      end
-    end
-
-    desc 'install_footer', 'Generate & include application footer'
-    def install_footer
-      footers = Dir[File.join(TEMPLATES, 'layout', 'footers', '*.haml')]
-      footers_css = Dir[File.join(TEMPLATES, 'layout', 'footers', 'css', '*')]
-
-      footers.each_with_index do |footer, index|
-        say "[#{index}] #{File.basename(footer,'.html.*')}"
-      end
-
-      idx = ask("Chose a footer theme (by number) for the application. Deault: 'footer-distributed (Basic)'")
-      idx = idx.empty? ? footers.index{|footer| footer if footer.include?('footer-distributed.html.haml')} : idx.to_i
-      copy_file footers[idx], "app/views/layouts/_footer.html.haml"
-      copy_file footers_css[idx], "app/assets/stylesheets/#{File.basename(footers_css[idx])}"
-
-      inject_into_file 'app/assets/stylesheets/application.css.sass', after: "@import animate\n" do <<-CODE
-  @import #{File.basename(footers_css[idx], '.*')}
-        CODE
-      end
-    end
-
-    desc 'install_layout', 'Generate common layout files'
-    def install_layout
-      run 'rm app/views/layouts/application.html.erb'
-      template 'layout/application.html.haml', 'app/views/layouts/application.html.haml'
-      template 'layout/_nav.html.haml', 'app/views/layouts/_nav.html.haml'
-      copy_file 'layout/_info_messages.html.haml', 'app/views/layouts/_info_messages.html.haml'
-      copy_file 'layout/_success_message.html.haml', 'app/views/layouts/_success_message.html.haml'
-      copy_file 'layout/_error_messages.html.haml', 'app/views/layouts/_error_messages.html.haml'
-      copy_file 'layout/_footer.html.haml', 'app/views/layouts/_footer.html.haml'
-      insert_into_file 'app/controllers/application_controller.rb', after: "class ApplicationController < ActionController::Base\n" do <<-CODE
-  add_flash_types :error, :success
-        CODE
-      end
-    end
-
-    desc 'install_heroku', 'setup application for use with heroku using sqlite3 for development'
-    def install_heroku
-      insert_into_file 'Gemfile', before: "group :development, :test do\n" do <<-CODE
-  group :production do
-    gem 'pg'
-    gem 'rails_12factor'
-  end
-
-        CODE
-        end
-        copy_file 'db/sqlite3_database.yml', 'config/database.yml'
-        copy_file 'heroku/Procfile', 'Procfile'
-        copy_file 'heroku/puma.rb', 'config/puma.rb'
-    end
-
-    desc 'git_init', "Initialize git with some files autormoatically ignored"
-    def git_init
-      run 'git init'
-      run 'echo /coverage >> .gitignore'
-      run 'echo /config/application.yml >> .gitignore'
-      run 'git add --all'
-      run "git commit -m 'initial commit'"
     end
 
     desc 'mysql_switch', 'Switch to mysql database'
@@ -495,7 +498,7 @@ require 'database_cleaner'
       copy_file 'rspec/request_shared_example.rb', 'spec/support/request_shared_examples.rb'
     end
 
-    desc 'auto_install', 'Run the most common actions in the right order'
+    desc 'base_install', 'Run the most common actions in the right order'
     def base_install
       install_gems
       install_application_helper
@@ -509,6 +512,53 @@ require 'database_cleaner'
       install_footnotes
       git_init
       say 'Dont forget to run config_env'
+    end
+
+    desc 'install NAME', 'Install generally used gems and customized files'
+    def install(name=nil)
+      options = %w[application_helper gems assets layout styles footer ui pundit rspec footnotes base git heroku devise]
+      unless name
+        say 'ERROR: "myrails install" was called with no arguments'
+        say 'Usage: "myrails install NAME"'
+        say "Available Options:\n"
+        say options.join("\n")
+        exit
+      end
+
+      case name
+      when 'application_helper'
+        install_application_helper
+      when 'gems'
+        install_gems
+      when 'assets'
+        install_assets
+      when 'layout'
+        install_layout
+      when 'styles'
+        install_css
+      when 'footer'
+        install_footer
+      when 'ui'
+        install_ui
+        say 'Dont forget to run config_env'
+      when 'pundit'
+        install_pundit
+        install_rails_helper
+      when 'rspec'
+        install_rspec
+      when 'footnotes'
+        install_footnotes
+      when 'base'
+        base_install
+      when 'git'
+        git_init
+      when 'heroku'
+        install_heroku
+      when 'devise'
+        install_devise
+      else
+        say "Unknown Action!"
+      end
     end
 
     desc 'use_global_varables', 'creates and loads config/application.yml'

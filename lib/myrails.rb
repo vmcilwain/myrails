@@ -508,6 +508,7 @@ require 'database_cleaner'
       install_rspec
       install_footnotes
       git_init
+      say 'Dont forget to run config_env'
     end
 
     desc 'use_global_varables', 'creates and loads config/application.yml'

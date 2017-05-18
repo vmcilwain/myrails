@@ -1,5 +1,3 @@
-# @author Lovell McIlwain
-#
 # Authorization for <%= options[:name] %> objects
 class <%= options[:name].camelize %>Policy < ApplicationPolicy
   # Allow all users to access new <%= options[:name] %>

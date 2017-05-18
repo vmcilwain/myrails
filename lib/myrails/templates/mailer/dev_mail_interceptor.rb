@@ -1,5 +1,3 @@
-# @author Lovell McIlwain
-#
 # Mail interceptor for development and test emails
 require 'socket'
 class DevMailInterceptor

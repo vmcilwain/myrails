@@ -1,5 +1,3 @@
-# @author Lovell McIlwain
-#
 # Presenter class for object views
 class <%= options[:name].camelize %>Presenter < BasePresenter
   # Reference initialized object_presenter as object

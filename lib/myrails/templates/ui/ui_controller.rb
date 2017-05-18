@@ -1,4 +1,3 @@
-# @author Lovell McIlwain
 # Handles HTTP actions for UI
 class UiController < ApplicationController
   # Before filter to check if application is running in development

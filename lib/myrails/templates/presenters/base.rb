@@ -1,5 +1,3 @@
-# @author Lovell McIlwain
-#
 # Class every presenter class should inherit from
 class BasePresenter
   # Initialize class with object to be presented and the view it is to be presented on

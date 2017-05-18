@@ -2,11 +2,11 @@
 
 This gem was created to make generating rails related files and other rails gem files (that I use) a lot easier. It is a thor backed gem that was designed with rails 5 in mind but most of it "should" work with rails 4.
 
-This gem is not endorsed by 37signals. I wrote it as a convenience for generating files that I would otherwise have written by hand.
+This gem is not endorsed by the rails core team. I wrote it as a convenience for generating files that I would otherwise have written by hand.
 
 ## Disclaimer
 
-`user at your own risk!`
+`user at your own risk!` I am not held responsible for using this gem. If you are not usre it will work for you, install it on a vagrant vm and give it a try there. You can use even use the Vagrantfile that is in this repo to take care of configuring a useable vm.
 
 This gem is not compatible with ruby 2.3 (yet).
 
@@ -18,9 +18,9 @@ Use the latest version if are primarily developing in rails 5
 
 ## Examples
 
-Here is an example of the gem in action:
+Here is an example of the gem works:
 
-For example, I use pundit. With this gem I am able to run the following:
+Lets say I use pundit. With this gem I am able to run the following:
 
 ```ruby
 myrails policy --name=article
@@ -46,6 +46,66 @@ with corresponding files:
         └── article_policy_spec.rb
 ```
 
+Inside app/policies/articles_policy.rb is boiler plate code like:
+
+```
+class ArticlePolicy < ApplicationPolicy
+  # Allow all users to access new article
+  def new?
+    true
+  end
+
+  # Allows owner to edit Article
+  def edit?
+    user == record.user
+  end
+
+  # Allows all users to create Article
+  alias_method :create?, :new?
+
+  # Allows all users to view Article
+  alias_method :show?, :new?
+
+  # Allows owner to update an Article
+  alias_method :update?, :edit?
+
+  # Allows owner to remove an Article
+  alias_method :destroy?, :edit?
+end
+```
+
+Inside the spec/policies/articles_policy_spec.rb is boiler plate code like:
+
+```
+# Use with Pundit Matches: https://github.com/chrisalley/pundit-matchers
+require 'rails_helper'
+describe ArticlePolicy do
+  subject { ArticlePolicy.new(user, article) }
+
+  let(:article) { create :article }
+
+  context 'for a visitor' do
+    it {is_expected.to permit_action(:new)}
+    it {is_expected.to permit_action(:create)}
+    it {is_expected.to permit_action(:show)}
+    it {is_expected.to forbid_action(:edit)}
+    it {is_expected.to forbid_action(:update)}
+    it {is_expected.to forbid_action(:destroy)}
+  end
+
+  context "for an admin" do
+
+    let(:user) { article.user }
+
+    it {is_expected.to permit_action(:new)}
+    it {is_expected.to permit_action(:create)}
+    it {is_expected.to permit_action(:show)}
+    it {is_expected.to permit_action(:edit)}
+    it {is_expected.to permit_action(:update)}
+    it {is_expected.to permit_action(:destroy)}
+  end
+end
+```
 
 ## Installation
 
@@ -63,7 +123,7 @@ gem install myrails
 
 ## Usage
 
-simple type `myrails` to see the help menu
+Simply type `myrails` to see the help menu
 
 ```ruby
 # Example for generating a presenter class

@@ -593,12 +593,7 @@ require 'database_cleaner'
         say "Unknown Action!"
       end
     end
-
-    desc 'use_global_varables', 'creates and loads config/application.yml'
-    def use_global_variables
-      copy_file 'initializers/application_vars.rb', 'config/initializers/application_vars.rb'
-      copy_file 'rails/application.yml', 'config/application.yml'
-    end
+    
   end
 end
 

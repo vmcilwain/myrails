@@ -18,39 +18,35 @@ module Myrails
       desc 'install_gems', 'Add & Install gems that I commonly use'
       def install_gems
         insert_into_file 'Gemfile', before: "group :development, :test do" do <<-CODE
-    group :test do
-      gem 'simplecov'
-      gem 'shoulda-matchers'
-      gem 'factory_girl_rails'
-      gem 'database_cleaner'
-      gem 'capybara'
-      gem 'selenium-webdriver'
-      gem 'chromedriver-helper'
-      gem 'launchy'
-      gem 'rails-controller-testing'
-    end
-
-      CODE
+group :test do
+  gem 'simplecov'
+  gem 'shoulda-matchers'
+  gem 'factory_girl_rails'
+  gem 'database_cleaner'
+  gem 'chromedriver-helper'
+  gem 'launchy'
+  gem 'rails-controller-testing'
+end
+CODE
       end
 
       insert_into_file 'Gemfile', after: "group :development, :test do\n" do <<-CODE
-      gem 'faker'
-      gem 'yard'
-      gem 'letter_opener'
-      gem "rails-erd"
-      CODE
+  gem 'faker'
+  gem 'yard'
+  gem 'letter_opener'
+  gem "rails-erd"
+CODE
       end
 
       insert_into_file 'Gemfile', after: "gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]\n" do <<-CODE
-    gem 'node'
-    gem 'bootstrap-sass', '~> 3.3.1'
-    gem 'autoprefixer-rails'
-    gem 'haml-rails'
-    gem "ransack"
-    gem 'will_paginate'
-    gem "font-awesome-rails"
-    gem 'trix'
-    gem 'record_tag_helper'
+gem 'bootstrap-sass', '~> 3.3.1'
+gem 'autoprefixer-rails'
+gem 'haml-rails'
+gem "ransack"
+gem 'will_paginate'
+gem "font-awesome-rails"
+gem 'trix'
+gem 'record_tag_helper'
         CODE
         end
         run 'bundle install'
@@ -255,12 +251,12 @@ module Myrails
       desc 'install_pundit', 'Install pundit gem and generate pundit files and application controller code'
       def install_pundit
         insert_into_file 'Gemfile', after: "gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]\n" do <<-CODE
-      gem 'pundit'
+gem 'pundit'
         CODE
         end
 
-        insert_into_file 'Gemfile', before: "group :development, :test do" do <<-CODE
-      gem 'pundit-matchers', '~> 1.1.0'
+        insert_into_file 'Gemfile', after: "group :test do\n" do <<-CODE
+  gem 'pundit-matchers', '~> 1.1.0'
         CODE
         end
 
@@ -302,6 +298,25 @@ module Myrails
         run 'rails generate rails_footnotes:install'
       end
 
+      desc 'install_dotenv', 'Install dotenv gem'
+      def install_dotenv
+        insert_into_file 'Gemfile', after: "gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]\n" do <<-CODE
+gem 'dotenv-rails', groups: [:development, :test]
+CODE
+        end
+
+        run 'bundle install'
+
+        inject_into_file 'config.ru', after: "require_relative 'config/environment'\n" do <<-CODE
+require 'dotenv'
+Dotenv.load
+CODE
+        end
+        copy_file 'rails/env.config', '.env.development'
+        copy_file 'rails/env.config', '.env.test'
+        run 'touch .env.production'
+      end
+
       desc 'base_install', 'Run the most common actions in the right order'
       def base_install
         install_gems
@@ -314,6 +329,7 @@ module Myrails
         install_pundit
         install_rspec
         install_footnotes
+        install_dotenv
         git_init
         say 'Dont forget to run config_env'
       end
@@ -513,14 +529,30 @@ require 'database_cleaner'
       copy_file 'rspec/request_shared_example.rb', 'spec/support/request_shared_examples.rb'
     end
 
-    desc 'install NAME', 'Install generally used gems and customized files'
+    desc 'install NAME', 'Install gems and customized files. Type `myrails install` for options'
     def install(name=nil)
-      options = %w[application_helper gems assets layout styles footer ui pundit rspec footnotes base git heroku devise]
+      options = {
+        application_helper: 'Overwrite default application helper with a custom helper',
+        gems: 'Install default gem set',
+        assets: 'Generate custom asset pipeline files',
+        layout: 'Generate custom layout',
+        styles: 'Generate custom styles',
+        footer: 'Generate a footer',
+        ui: 'Generate UI resource',
+        pundit: 'Install and configure Pundit gem',
+        rspec: 'Install and configure Rspec gem',
+        footnotes: 'Install and configure Footnotes gem',
+        base: 'Run through all options listed in this list',
+        git: 'Generate git directory and ignore default files',
+        heroku: 'Generate needed setup for Heroku deployment',
+        devise: 'Generate and configure Devise gem',
+        dotenv: 'Generate and configure Dotenv gem'
+      }
       unless name
         say 'ERROR: "myrails install" was called with no arguments'
         say 'Usage: "myrails install NAME"'
         say "Available Options:\n"
-        say options.join("\n")
+        options.each{|k,v| say "* #{k}: #{v}"}
         exit
       end
 
@@ -555,6 +587,8 @@ require 'database_cleaner'
         install_heroku
       when 'devise'
         install_devise
+      when 'dotenv'
+        install_dotenv
       else
         say "Unknown Action!"
       end

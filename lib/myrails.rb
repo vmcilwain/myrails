@@ -204,7 +204,7 @@ gem 'record_tag_helper'
       desc 'install_devise', 'Generate devise files'
       def install_devise
         insert_into_file 'Gemfile', after: "gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]\n" do <<-CODE
-      gem 'devise', '~> 4.2.0'
+      gem 'devise'
         CODE
         end
         run 'bundle update'
@@ -593,7 +593,7 @@ require 'database_cleaner'
         say "Unknown Action!"
       end
     end
-    
+
   end
 end
 

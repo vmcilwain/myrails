@@ -32,6 +32,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "bundler", "~> 1.15"
   spec.add_development_dependency "rake", "~> 12.0"
   spec.add_development_dependency "rspec", "~> 3.0"
-  spec.add_dependency 'activesupport', '~> 5.1.4'
+  spec.add_dependency 'activesupport', '~> 5.1.3'
   spec.add_dependency 'thor', '~> 0.20.0'
 end

@@ -8,8 +8,6 @@ This gem is not endorsed by the rails core team. I wrote it as a convenience for
 
 `user at your own risk!` I am not held responsible for using this gem. If you are not usre it will work for you, install it on a vagrant vm and give it a try there. You can use even use the Vagrantfile that is in this repo to take care of configuring a useable vm.
 
-This gem is not compatible with ruby 2.3 (yet).
-
 ## Notes
 
 Use 1.1.1 if you are primarily developing in rails 3 & 4

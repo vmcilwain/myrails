@@ -1,4 +1,4 @@
-.# coding: utf-8
+# coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'myrails/version'
@@ -9,8 +9,8 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Vell"]
   spec.email         = ["lovell.mcilwain@gmail.com"]
 
-  spec.summary       = %q{A thor backed generator for generating rails related files based on my style of coding}
-  spec.description   = %q{Generates files with with boiler plate code. Supports pundit, presenters, installing of themes from bootswatch and others.}
+  spec.summary       = %q{A thor backed gem for generating rails related files based on my style of coding}
+  spec.description   = %q{Generates files on demand with boiler plate code. Supports pundit, presenters, installing of bootstrap themes created by bootswatch.com and others.}
   spec.homepage      = "https://github.com/vmcilwain/myrails"
   spec.license       = "MIT"
 
@@ -29,9 +29,9 @@ Gem::Specification.new do |spec|
   spec.executables   = ['myrails']
   spec.require_paths = ["lib"]
 
-  spec.add_development_dependency "bundler", "~> 1.13"
-  spec.add_development_dependency "rake", "~> 10.0"
+  spec.add_development_dependency "bundler", "~> 1.15"
+  spec.add_development_dependency "rake", "~> 12.0"
   spec.add_development_dependency "rspec", "~> 3.0"
-  spec.add_dependency 'activesupport', '~> 5.1.3'
-  spec.add_dependency 'thor', '~> 0.19.1'
+  spec.add_dependency 'activesupport', '~> 5.1.4'
+  spec.add_dependency 'thor', '~> 0.20.0'
 end

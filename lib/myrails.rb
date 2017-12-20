@@ -168,28 +168,36 @@ gem 'record_tag_helper'
         run 'bundle install'
         run 'rails g rspec:install'
         install_rails_helper
-        copy_file 'rspec/database_cleaner.rb', "spec/support/configs/database_cleaner.rb"
-        copy_file 'rspec/factory_girl.rb', 'spec/support/configs/factory_girl.rb'
-        copy_file 'rspec/shoulda_matchers.rb', 'spec/support/configs/shoulda_matchers.rb'
-        copy_file 'rspec/silence_backtrace.rb', 'spec/support/configs/silence_rspec_backtrace.rb'
-        copy_file 'rspec/javascript.rb', 'spec/support/configs/javascript.rb'
-        copy_file 'rspec/mailer.rb', 'spec/support/configs/mailer.rb'
-        copy_file 'rspec/router.rb', 'spec/support/configs/router.rb'
-        copy_file 'rspec/files.rb', 'spec/support/configs/files.rb'
+        Dir["#{__dir__}/myrails/templates/spec/**/*"].each do |file|
+          copy_file file, "#{file.gsub(__dir__+'/myrails/templates/', '')}" unless File.directory? file
+        end
+        # copy_file 'rspec/database_cleaner.rb', "spec/support/configs/database_cleaner.rb"
+        # copy_file 'rspec/factory_girl.rb', 'spec/support/configs/factory_girl.rb'
+        # copy_file 'rspec/shoulda_matchers.rb', 'spec/support/configs/shoulda_matchers.rb'
+        # copy_file 'rspec/silence_backtrace.rb', 'spec/support/configs/silence_rspec_backtrace.rb'
+        # copy_file 'rspec/javascript.rb', 'spec/support/configs/javascript.rb'
+        # copy_file 'rspec/mailer.rb', 'spec/support/configs/mailer.rb'
+        # copy_file 'rspec/router.rb', 'spec/support/configs/router.rb'
+        # copy_file 'rspec/files.rb', 'spec/support/configs/files.rb'
       end
 
       desc 'install_rails_helper', 'Add code to rspec/rails_helper so rspec runs the way I like'
       def install_rails_helper
         inject_into_file "spec/rails_helper.rb", after: "require 'rspec/rails'\n" do <<-CODE
-      require 'simplecov'
-      SimpleCov.start
-      #use Chromedriver
-      unless ENV['NOCHROME']
-      Capybara.register_driver :selenium do |app|
-        Capybara::Selenium::Driver.new(app, :browser => :chrome)
-      end
-      end
-      CODE
+require 'simplecov'
+SimpleCov.start
+
+Capybara.app_host = "http://localhost:3000"
+Capybara.server_host = "localhost"
+Capybara.server_port = "3000"
+
+#use Chromedriver
+unless ENV['NOCHROME']
+  Capybara.register_driver :selenium do |app|
+    Capybara::Selenium::Driver.new(app, :browser => :chrome)
+  end
+end
+CODE
         end
 
         gsub_file 'spec/rails_helper.rb', "# Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }", "Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }"
@@ -197,8 +205,14 @@ gem 'record_tag_helper'
         gsub_file "spec/rails_helper.rb", "config.use_transactional_fixtures = true", "config.use_transactional_fixtures = false"
 
         inject_into_file 'spec/rails_helper.rb', after: "RSpec.configure do |config|\n" do <<-CODE
-      config.include(JavascriptHelper, type: :feature)
-      CODE
+  # Can use methods like dom_id in features
+  config.include ActionView::RecordIdentifier, type: :feature
+  # Can use methods likke strip_tags in features
+  config.include ActionView::Helpers::SanitizeHelper, type: :feature
+  # Can use methods like truncate
+  config.include ActionView::Helpers::TextHelper, type: :feature
+  config.include(JavascriptHelper, type: :feature)
+CODE
         end
       end
 

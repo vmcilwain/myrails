@@ -244,7 +244,7 @@ CODE
         end
 
         if yes?('Will you be needing registration params override? Answer "yes" if you will be adding attributes to the user model')
-          inject_into_file 'app/controllers/application_controller.rb',  after: "skip_before_action :authenticate_#{devise_model}!\n" do <<-CODE
+          inject_into_file 'app/controllers/application_controller.rb',  after: "before_action :authenticate_#{devise_model}!\n" do <<-CODE
   # Before action include additional registration params
   # (see #configure_permitted_parameters)
   before_action :configure_permitted_parameters, if: :devise_controller?

@@ -21,7 +21,7 @@ module Myrails
 group :test do
   gem 'simplecov'
   gem 'shoulda-matchers'
-  gem 'factory_girl_rails'
+  gem 'factory_bot_rails'
   gem 'database_cleaner'
   gem 'chromedriver-helper'
   gem 'launchy'
@@ -135,7 +135,7 @@ gem 'record_tag_helper'
           copy_file 'heroku/puma.rb', 'config/puma.rb'
       end
 
-      desc 'git_init', "Initialize git with some files autormoatically ignored"
+      desc 'git_init', "Initialize git with some files automatically ignored"
       def git_init
         run 'git init'
         run 'echo /coverage >> .gitignore'
@@ -161,24 +161,20 @@ gem 'record_tag_helper'
       desc 'install_rspec', 'Generate rspec structure & rspec configuration that I commonly use'
       def install_rspec
         insert_into_file 'Gemfile', after: "gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]\n" do <<-CODE
-  gem 'rspec-rails', group: :test
-  gem 'capybara', group: :test
-        CODE
+gem 'rspec-rails', group: :test
+CODE
         end
+
         run 'bundle install'
         run 'rails g rspec:install'
+
         install_rails_helper
+
         Dir["#{__dir__}/myrails/templates/spec/**/*"].each do |file|
-          copy_file file, "#{file.gsub(__dir__+'/myrails/templates/', '')}" unless File.directory? file
+          if file.include?('/support/') && !['devise'].include?(File.basename(file, '.rb'))
+            copy_file file, "#{file.gsub(__dir__+'/myrails/templates/', '')}" unless File.directory? file
+          end
         end
-        # copy_file 'rspec/database_cleaner.rb', "spec/support/configs/database_cleaner.rb"
-        # copy_file 'rspec/factory_girl.rb', 'spec/support/configs/factory_girl.rb'
-        # copy_file 'rspec/shoulda_matchers.rb', 'spec/support/configs/shoulda_matchers.rb'
-        # copy_file 'rspec/silence_backtrace.rb', 'spec/support/configs/silence_rspec_backtrace.rb'
-        # copy_file 'rspec/javascript.rb', 'spec/support/configs/javascript.rb'
-        # copy_file 'rspec/mailer.rb', 'spec/support/configs/mailer.rb'
-        # copy_file 'rspec/router.rb', 'spec/support/configs/router.rb'
-        # copy_file 'rspec/files.rb', 'spec/support/configs/files.rb'
       end
 
       desc 'install_rails_helper', 'Add code to rspec/rails_helper so rspec runs the way I like'
@@ -212,6 +208,7 @@ CODE
   # Can use methods like truncate
   config.include ActionView::Helpers::TextHelper, type: :feature
   config.include(JavascriptHelper, type: :feature)
+  config.include MailerHelper
 CODE
         end
       end
@@ -223,7 +220,7 @@ CODE
         CODE
         end
         run 'bundle update'
-        copy_file 'rspec/devise.rb', 'spec/support/configs/devise.rb'
+        copy_file 'spec/devise.rb', 'spec/support/configs/devise.rb'
 
         devise_model = ask("What would you like to call the devise model? Default: user")
         devise_model = devise_model.empty? ? 'user' : devise_model
@@ -437,7 +434,7 @@ CODE
     def model
       template 'rails/model.rb', "app/models/#{options[:name].downcase}.rb"
       template 'rails/namespace_model.rb', "app/models/#{options[:name].split("/").first.singularize.downcase}.rb" if options[:name].include?("/")
-      template 'rspec/model.rb', "spec/models/#{options[:name].downcase}_spec.rb"
+      template 'spec/model.rb', "spec/models/#{options[:name].downcase}_spec.rb"
     end
 
     desc 'controller', "Generates a rails controller with the given name along with related spec file. Use '/' to create a namespaced controller"
@@ -448,7 +445,7 @@ CODE
         parent, child = options[:name].split("/")
         template 'rails/namespace_controller.rb', "app/controllers/#{parent}/#{parent.downcase}_controller.rb"
       end
-      template 'rspec/controller.rb', "spec/controllers/#{options[:name].downcase.pluralize}_controller_spec.rb"
+      template 'spec/controller.rb', "spec/controllers/#{options[:name].downcase.pluralize}_controller_spec.rb"
       run "mkdir -p app/views/#{options[:name].downcase.pluralize}"
     end
 
@@ -456,7 +453,7 @@ CODE
     option :name, required: true
     def policy
       template 'rails/pundit.rb', "app/policies/#{options[:name].downcase}_policy.rb"
-      template 'rspec/pundit.rb', "spec/policies/#{options[:name].downcase}_policy_spec.rb"
+      template 'spec/pundit.rb', "spec/policies/#{options[:name].downcase}_policy_spec.rb"
     end
 
     desc 'presenter', "Generates a presenter class with the given name and a related spec file. Use '/' to create a namespaced presenter"
@@ -468,10 +465,10 @@ CODE
       template 'presenters/presenter_spec.rb', "spec/presenters/#{options[:name].downcase}_presenter_spec.rb"
     end
 
-    desc 'factory', "Generates a factory_girl factory in the spec/factories directory. Use '/' to create a namespaced factory"
+    desc 'factory', "Generates a factory_bot factory in the spec/factories directory. Use '/' to create a namespaced factory"
     option :name, required: true
     def factory
-      template 'rspec/factory.rb', "spec/factories/#{options[:name].downcase}.rb"
+      template 'spec/factory.rb', "spec/factories/#{options[:name].downcase}.rb"
     end
 
     desc 'sendgrid', 'Generate sendgrid initializer and mail interceptor'
@@ -542,7 +539,7 @@ CODE
       run "rails plugin new #{options[:name]} --dummy-path=spec/dummy --skip-test-unit --#{etype}"
     end
 
-    desc 'engine_setup', 'Configure rails engine for development with RSpec, Capybara and FactoryGirl'
+    desc 'engine_setup', 'Configure rails engine for development with RSpec, Capybara and FactoryBot'
     option :name, required: true
     def engine_setup
       gsub_file "#{options[:name]}.gemspec", 's.homepage    = "TODO"', 's.homepage    = "http://TBD.com"'
@@ -559,7 +556,7 @@ CODE
       inject_into_file "#{options[:name]}.gemspec", after: "s.add_development_dependency \"sqlite3\"\n" do <<-CODE
   s.add_development_dependency 'rspec-rails'
   s.add_development_dependency 'capybara'
-  s.add_development_dependency 'factory_girl_rails'
+  s.add_development_dependency 'factory_bot_rails'
   s.add_development_dependency  "faker"
   s.add_development_dependency  "byebug"
   s.add_development_dependency  'rails-controller-testing'
@@ -577,11 +574,15 @@ CODE
       end
 
       run 'bundle'
-      copy_file 'rspec/database_cleaner.rb', 'spec/configs/database_cleaner.rb'
-      copy_file 'rspec/factory_girl.rb', 'spec/configs/factory_gir.rb'
-      copy_file 'rspec/presenter.rb', 'spec/configs/presenter.rb'
-      copy_file 'rspec/shoulda_matchers', 'spec/configs/shoulda_matchers.rb'
+      
+      Dir["#{__dir__}/myrails/templates/spec/**/*"].each do |file|
+        if file.include? '/support/'
+          copy_file file, "#{file.gsub(__dir__+'/myrails/templates/', '')}" unless File.directory? file
+        end
+      end
+      
       copy_file 'engines/rakefile', 'Rakefile'
+      
       run 'rails g rspec:install'
 
       gsub_file 'spec/rails_helper.rb', "# Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }", "Dir[File.join(__dir__, 'support', '**', '*.rb')].each { |f| require f }"
@@ -590,7 +591,7 @@ CODE
 
       inject_into_file 'spec/rails_helper.rb', after: "require 'rspec/rails'\n" do <<-CODE
 require 'shoulda/matchers'
-require 'factory_girl'
+require 'factory_bot'
 require 'database_cleaner'
         CODE
       end
@@ -605,7 +606,7 @@ require 'database_cleaner'
       inject_into_file "lib/#{options[:name]}/engine.rb", after: "class Engine < ::Rails::Engine\n" do <<-CODE
     config.generators do |g|
       g.test_framework :rspec, :fixture => false
-      g.fixture_replacement :factory_girl, :dir => 'spec/factories'
+      g.fixture_replacement :factory_bot, :dir => 'spec/factories'
       g.assets false
       g.helper false
     end
@@ -616,14 +617,14 @@ require 'database_cleaner'
     desc 'shared_example', 'Generates an RSpec shared example template in the support directory'
     option :text, required: true
     def shared_example
-      template 'rspec/shared_example.rb', 'spec/support/shared_examples.rb'
+      template 'spec/shared_example.rb', 'spec/support/shared_examples/shared_examples.rb'
     end
 
     desc 'request', 'Generates an RSpec request spec'
     option :name, required: true
     def request
-      template 'rspec/request.rb', "spec/requests/#{options[:name]}_spec.rb"
-      copy_file 'rspec/request_shared_example.rb', 'spec/support/request_shared_examples.rb'
+      template 'spec/request.rb', "spec/requests/#{options[:name]}_spec.rb"
+      copy_file 'spec/request_shared_example.rb', 'spec/support/shared_examples/request_shared_examples.rb'
     end
 
     desc 'install NAME', 'Install gems and customized files. Type `myrails install` for options'

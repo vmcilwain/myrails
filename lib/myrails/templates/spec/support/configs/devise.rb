@@ -22,7 +22,7 @@ Reference: https://github.com/plataformatec/devise/wiki/How-To:-Test-with-Capyba
 
 To use authentication bypass use the following for loging in:
 
-user = FactoryGirl.create(:user)
+user = FactoryBot.create(:user)
 login_as(user, :scope => :user)
 
 if within a test you need to sign_out a user use:

@@ -12,7 +12,7 @@ module Myrails
     no_tasks do
       desc 'install_application_helper', 'Replace current application helper with one that has commonly used code'
       def install_application_helper
-        copy_file 'rails/application_helper.rb', 'app/helpers/application_helper.rb'
+        copy_file 'rails/app/helpers/application_helper.rb', 'app/helpers/application_helper.rb'
       end
 
       desc 'install_gems', 'Add & Install gems that I commonly use'
@@ -444,18 +444,18 @@ CODE
     desc 'model', "Generates a rails model with the given name along with its related spec file and namespace prefix for table creation. Use '/' to create a namespaced model"
     option :name, required: true
     def model
-      template 'rails/model.rb', "app/models/#{options[:name].downcase}.rb"
-      template 'rails/namespace_model.rb', "app/models/#{options[:name].split("/").first.singularize.downcase}.rb" if options[:name].include?("/")
+      template 'rails/app/models/model.rb', "app/models/#{options[:name].downcase}.rb"
+      template 'rails/app/models/namespace_model.rb', "app/models/#{options[:name].split("/").first.singularize.downcase}.rb" if options[:name].include?("/")
       template 'spec/model.rb', "spec/models/#{options[:name].downcase}_spec.rb"
     end
 
     desc 'controller', "Generates a rails controller with the given name along with related spec file. Use '/' to create a namespaced controller"
     option :name, required: true
     def controller
-      template 'rails/controller.rb', "app/controllers/#{options[:name].downcase.pluralize}_controller.rb"
+      template 'rails/app/controllers/controller.rb', "app/controllers/#{options[:name].downcase.pluralize}_controller.rb"
       if options[:name].include?("/")
         parent, child = options[:name].split("/")
-        template 'rails/namespace_controller.rb', "app/controllers/#{parent}/#{parent.downcase}_controller.rb"
+        template 'rails/app/controllers/namespace_controller.rb', "app/controllers/#{parent}/#{parent.downcase}_controller.rb"
       end
       template 'spec/controller.rb', "spec/controllers/#{options[:name].downcase.pluralize}_controller_spec.rb"
       run "mkdir -p app/views/#{options[:name].downcase.pluralize}"
@@ -464,17 +464,17 @@ CODE
     desc 'policy', "Generates a pundit policy with the given name and a related spec file. Use '/' to create a namespaced policy"
     option :name, required: true
     def policy
-      template 'rails/pundit.rb', "app/policies/#{options[:name].downcase}_policy.rb"
+      template 'rails/app/policies/pundit.rb', "app/policies/#{options[:name].downcase}_policy.rb"
       template 'spec/pundit.rb', "spec/policies/#{options[:name].downcase}_policy_spec.rb"
     end
 
     desc 'presenter', "Generates a presenter class with the given name and a related spec file. Use '/' to create a namespaced presenter"
     option :name, required: true
     def presenters
-      copy_file 'presenters/base.rb', 'app/presenters/base_presenter.rb'
-      template 'presenters/presenter.rb', "app/presenters/#{options[:name].downcase}_presenter.rb"
-      copy_file 'presenters/presenter_config.rb', 'spec/support/configs/presenter.rb'
-      template 'presenters/presenter_spec.rb', "spec/presenters/#{options[:name].downcase}_presenter_spec.rb"
+      copy_file 'rails/app/presenters/base.rb', 'app/presenters/base_presenter.rb'
+      template 'rails/app/presenters/presenter.rb', "app/presenters/#{options[:name].downcase}_presenter.rb"
+      copy_file 'rails/app/presenters/presenter_config.rb', 'spec/support/configs/presenter.rb'
+      template 'rails/app/presenters/presenter_spec.rb', "spec/presenters/#{options[:name].downcase}_presenter_spec.rb"
     end
 
     desc 'factory', "Generates a factory_bot factory in the spec/factories directory. Use '/' to create a namespaced factory"

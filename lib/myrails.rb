@@ -17,6 +17,8 @@ module Myrails
 
       desc 'install_gems', 'Add & Install gems that I commonly use'
       def install_gems
+        answer = ask 'Would you like to use [B]ootstrap or [M]aterial?'
+        
         insert_into_file 'Gemfile', before: "group :development, :test do" do <<-CODE
 group :test do
   gem 'simplecov'
@@ -36,18 +38,17 @@ CODE
   gem 'letter_opener'
   gem "rails-erd"
 CODE
-      end
-
+      end  
+          
       insert_into_file 'Gemfile', after: "gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]\n" do <<-CODE
-gem 'bootstrap-sass', '~> 3.3.1'
-gem 'autoprefixer-rails'
 gem 'haml-rails'
 gem "ransack"
 gem 'will_paginate'
 gem "font-awesome-rails"
 gem 'trix'
 gem 'record_tag_helper'
-        CODE
+gem 'jquery-rails'
+CODE
         end
         run 'bundle install'
 
@@ -67,9 +68,8 @@ CODE
       end
 
 
-      desc 'install_css', 'Generate & include application css theme'
-      def install_css
-        themes = Dir[File.join(TEMPLATES, 'rails', 'app','assets', 'bootstrap_themes', '*')]
+      def choose_bootstrap_theme
+        themes = Dir[File.join(TEMPLATES, 'rails', 'app','assets', 'bootstrap', 'bootstrap_themes', '*')]
 
         themes.each_with_index do |theme, index|
           say "[#{index}] #{File.basename(theme,'.*')}"
@@ -77,6 +77,7 @@ CODE
 
         idx = ask("Choose a color theme (by number) for the application. Default: 'spacelab'")
         idx = idx.empty? ? themes.index{|theme| theme if theme.include?('spacelab')} : idx.to_i
+      
         copy_file(themes[idx], "app/assets/stylesheets/#{File.basename(themes[idx])}")
 
         inject_into_file 'app/assets/stylesheets/application.css.sass', before: "@import will_paginate" do <<-CODE
@@ -84,11 +85,10 @@ CODE
 CODE
         end
       end
-
-      desc 'install_footer', 'Generate & include application footer'
-      def install_footer
-        footers = Dir[File.join(TEMPLATES, 'rails', 'app', 'views','layout', 'footers', '*.haml')]
-        footers_css = Dir[File.join(TEMPLATES, 'rails', 'app', 'views', 'layout', 'footers', 'css', '*')]
+      
+      def choose_bootstrap_footer
+        footers = Dir[File.join(TEMPLATES, 'rails', 'app', 'views','layout', 'bootstrap', 'footers', '*.haml')]
+        footers_css = Dir[File.join(TEMPLATES, 'rails', 'app', 'views', 'layout', 'bootstrap', 'footers', 'css', '*')]
 
         footers.each_with_index do |footer, index|
           say "[#{index}] #{File.basename(footer,'.html.*')}"
@@ -100,20 +100,81 @@ CODE
         copy_file footers_css[idx], "app/assets/stylesheets/#{File.basename(footers_css[idx])}"
 
         inject_into_file 'app/assets/stylesheets/application.css.sass', after: "@import animate\n" do <<-CODE
-    @import #{File.basename(footers_css[idx], '.*')}
-          CODE
+@import #{File.basename(footers_css[idx], '.*')}
+CODE
+        end
+      end
+      
+      def copy_bootstrap_files
+        template 'rails/app/views/layout/bootstrap/application.html.haml', 'app/views/layouts/application.html.haml'
+        template 'rails/app/views/layout/bootstrap/_nav.html.haml', 'app/views/layouts/_nav.html.haml'
+        copy_file 'rails/app/views/layout/bootstrap/_info_messages.html.haml', 'app/views/layouts/_info_messages.html.haml'
+        copy_file 'rails/app/views/layout/bootstrap/_success_message.html.haml', 'app/views/layouts/_success_message.html.haml'
+        copy_file 'rails/app/views/layout/bootstrap/_error_messages.html.haml', 'app/views/layouts/_error_messages.html.haml'
+        copy_file 'rails/app/views/layout/bootstrap/_footer.html.haml', 'app/views/layouts/_footer.html.haml'
+      end
+      
+      desc 'install_bootstrap', 'Generate Bootrap css theme'
+      def install_bootstrap
+        insert_into_file 'Gemfile', after: "gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]\n" do <<-CODE
+gem 'bootstrap-sass', '~> 3.3.1'
+gem 'autoprefixer-rails'
+CODE
+        end
+        
+        run 'bundle install'
+        choose_bootstrap_theme
+        choose_bootstrap_footer
+        copy_bootstrap_files
+      end
+      
+      def copy_material_files
+        Dir["#{__dir__}/myrails/templates/rails/app/views/layout/material/**/*"].each do |file|
+          copy_file file, "app/views/layouts/#{File.basename(file)}"
+        end
+      end
+      
+      desc 'install_material', 'Generate Material css theme'
+      def install_material
+        insert_into_file 'Gemfile', after: "gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]\n" do <<-CODE
+  gem 'materialize-sass'
+  gem 'material_icons'
+  CODE
+        end
+        
+        run 'bundle install'
+
+        copy_material_files
+        
+        insert_into_file 'app/assets/stylesheets/application.css.sass', before: '@import will_paginate' do <<-CODE
+@import "materialize/components/color"
+$primary-color: color("grey", "darken-3") !default
+$secondary-color: color("grey", "base") !default
+@import materialize
+@import material_icons
+CODE
+        end
+      
+        insert_into_file 'app/assets/javascripts/application.js', after: "//= require turbolinks\n" do <<-CODE
+//= require materialize
+CODE
         end
       end
 
       desc 'install_layout', 'Generate common layout files'
       def install_layout
+        answer = ask 'Would you like to use [B]ootstrap or [M]aterial'
+        
         run 'rm app/views/layouts/application.html.erb'
-        template 'rails/app/views/layout/application.html.haml', 'app/views/layouts/application.html.haml'
-        template 'rails/app/views/layout/_nav.html.haml', 'app/views/layouts/_nav.html.haml'
-        copy_file 'rails/app/views/layout/_info_messages.html.haml', 'app/views/layouts/_info_messages.html.haml'
-        copy_file 'rails/app/views/layout/_success_message.html.haml', 'app/views/layouts/_success_message.html.haml'
-        copy_file 'rails/app/views/layout/_error_messages.html.haml', 'app/views/layouts/_error_messages.html.haml'
-        copy_file 'rails/app/views/layout/_footer.html.haml', 'app/views/layouts/_footer.html.haml'
+        
+        install_assets
+        
+        if answer =~ /^B|b/
+          install_bootstrap
+        elsif answer =~ /^M|m/
+          install_material
+        end
+        
         insert_into_file 'app/controllers/application_controller.rb', after: "class ApplicationController < ActionController::Base\n" do <<-CODE
   add_flash_types :error, :success
 CODE
@@ -642,15 +703,12 @@ require 'database_cleaner'
       copy_file 'spec/feature.rb', "spec/features/#{options[:name]}_spec.rb"
     end
 
-    desc 'install NAME', 'Install gems and customized files. Type `myrails install` for options'
+    desc 'install NAME', 'Install customizations to convfigure application quickly. Type `myrails install` for options'
     def install(name=nil)
       options = {
         application_helper: 'Overwrite default application helper with a custom helper',
         gems: 'Install default gem set',
-        assets: 'Generate custom asset pipeline files',
-        layout: 'Generate custom layout',
-        styles: 'Generate custom styles',
-        footer: 'Generate a footer',
+        layout: 'Generate assets and custom styles using either Boostrap or Material',
         ui: 'Generate UI resource',
         pundit: 'Install and configure Pundit gem',
         rspec: 'Install and configure Rspec gem',
@@ -677,14 +735,8 @@ require 'database_cleaner'
         install_application_helper
       when 'gems'
         install_gems
-      when 'assets'
-        install_assets
       when 'layout'
         install_layout
-      when 'styles'
-        install_css
-      when 'footer'
-        install_footer
       when 'ui'
         install_ui
       when 'pundit'

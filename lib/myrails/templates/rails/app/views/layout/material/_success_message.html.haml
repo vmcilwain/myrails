@@ -1,0 +1,7 @@
+-if flash[:success]
+  .row.success-alert
+    .col.s12.m6
+      .card.teal.lighten-3
+        .card-content
+          %span.card-title Success!
+          %p=flash[:success]

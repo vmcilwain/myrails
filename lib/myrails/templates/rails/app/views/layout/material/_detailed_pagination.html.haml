@@ -1,0 +1,4 @@
+.digg_pagination
+  .page_info
+    = page_entries_info local_assigns[:array]
+  = will_paginate local_assigns[:array], :container => false

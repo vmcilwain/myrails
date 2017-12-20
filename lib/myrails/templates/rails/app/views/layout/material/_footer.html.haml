@@ -1,0 +1,24 @@
+%footer.page-footer
+  .container
+    .row
+      .col.l6.s12
+        %h5.white-text Lovell McIlwain
+        %p.grey-text.text-lighten-4 some text.
+      .col.l4.offset-l2.s12
+        %h5.white-text Connect With Me
+        %ul
+          %li
+            =link_to 'Contact Me', nil, class: 'grey-text text-lighten-3'
+          %li
+            =link_to :Github, nil, class: 'grey-text text-lighten-3', target: :blank
+          %li
+            =link_to :LinkedIn, nil, class: 'grey-text text-lighten-3', target: :blank
+          %li
+            =link_to :Twitter, nil, class: 'grey-text text-lighten-3', target: :blank
+  .footer-copyright
+    .container
+      © #{Date.today.year} Lovell McIlwain
+      -# %a.grey-text.text-lighten-4.right{:href => "#!"} More Links
+      %br/
+      Version: 
+      =ENV['VERZION']

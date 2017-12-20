@@ -1,0 +1,14 @@
+-if flash[:notice]
+  .row
+    .col.s12.m6
+      .card.teal.lighten-3
+        .card-content.white-text
+          %span.card-title Notice!
+          %p=flash[:notice]
+-if flash[:alert]
+  .row
+    .col.s12.m6
+      .card.red.lighten-3
+        .card-content.white-text
+          %span.card-title Alert!
+          %p=flash[:alert]

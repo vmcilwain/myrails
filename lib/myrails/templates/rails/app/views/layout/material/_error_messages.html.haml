@@ -1,0 +1,9 @@
+-if obj.errors.any?
+  .row.error
+    .col.s12.m6
+      .card.red.lighten-3
+        .card-content
+          %span.card-title=flash[:error]
+          %ul
+            -obj.errors.full_messages.each do |error|
+              %li #{error}

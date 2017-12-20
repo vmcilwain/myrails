@@ -60,10 +60,10 @@ gem 'record_tag_helper'
       desc 'install_assets', 'Generate common asset pipeline files'
       def install_assets
         run "rm app/assets/stylesheets/application.css"
-        copy_file 'assets/application.css.sass', 'app/assets/stylesheets/application.css.sass'
-        copy_file 'assets/application.js', 'app/assets/javascripts/application.js'
-        copy_file 'assets/animate.scss', 'app/assets/stylesheets/animate.scss'
-        copy_file 'assets/will_paginate.scss', 'app/assets/stylesheets/will_paginate.scss'
+        copy_file 'rails/app/assets/application.css.sass', 'app/assets/stylesheets/application.css.sass'
+        copy_file 'rails/app/assets/application.js', 'app/assets/javascripts/application.js'
+        copy_file 'rails/app/assets/animate.scss', 'app/assets/stylesheets/animate.scss'
+        copy_file 'rails/app/assets/will_paginate.scss', 'app/assets/stylesheets/will_paginate.scss'
       end
 
 
@@ -87,8 +87,8 @@ gem 'record_tag_helper'
 
       desc 'install_footer', 'Generate & include application footer'
       def install_footer
-        footers = Dir[File.join(TEMPLATES, 'layout', 'footers', '*.haml')]
-        footers_css = Dir[File.join(TEMPLATES, 'layout', 'footers', 'css', '*')]
+        footers = Dir[File.join(TEMPLATES, 'rails', 'app', 'views','layout', 'footers', '*.haml')]
+        footers_css = Dir[File.join(TEMPLATES, 'rails', 'app', 'views', 'layout', 'footers', 'css', '*')]
 
         footers.each_with_index do |footer, index|
           say "[#{index}] #{File.basename(footer,'.html.*')}"
@@ -108,12 +108,12 @@ gem 'record_tag_helper'
       desc 'install_layout', 'Generate common layout files'
       def install_layout
         run 'rm app/views/layouts/application.html.erb'
-        template 'layout/application.html.haml', 'app/views/layouts/application.html.haml'
-        template 'layout/_nav.html.haml', 'app/views/layouts/_nav.html.haml'
-        copy_file 'layout/_info_messages.html.haml', 'app/views/layouts/_info_messages.html.haml'
-        copy_file 'layout/_success_message.html.haml', 'app/views/layouts/_success_message.html.haml'
-        copy_file 'layout/_error_messages.html.haml', 'app/views/layouts/_error_messages.html.haml'
-        copy_file 'layout/_footer.html.haml', 'app/views/layouts/_footer.html.haml'
+        template 'rails/app/views/layout/application.html.haml', 'app/views/layouts/application.html.haml'
+        template 'rails/app/views/layout/_nav.html.haml', 'app/views/layouts/_nav.html.haml'
+        copy_file 'rails/app/views/layout/_info_messages.html.haml', 'app/views/layouts/_info_messages.html.haml'
+        copy_file 'rails/app/views/layout/_success_message.html.haml', 'app/views/layouts/_success_message.html.haml'
+        copy_file 'rails/app/views/layout/_error_messages.html.haml', 'app/views/layouts/_error_messages.html.haml'
+        copy_file 'rails/app/views/layout/_footer.html.haml', 'app/views/layouts/_footer.html.haml'
         insert_into_file 'app/controllers/application_controller.rb', after: "class ApplicationController < ActionController::Base\n" do <<-CODE
     add_flash_types :error, :success
           CODE
@@ -486,8 +486,8 @@ CODE
     desc 'sendgrid', 'Generate sendgrid initializer and mail interceptor'
     option :email, required: true
     def sendgrid
-      copy_file 'mailer/sendgrid.rb', 'config/initializers/sendgrid.rb'
-      template 'mailer/dev_mail_interceptor.rb', 'app/mailers/dev_mail_interceptor.rb'
+      copy_file 'rails/app/mailers/sendgrid.rb', 'config/initializers/sendgrid.rb'
+      template 'rails/app/mailers/dev_mail_interceptor.rb', 'app/mailers/dev_mail_interceptor.rb'
       ENVIRONMENTS.each do |environment|
         unless environment == 'production'
           inject_into_file "config/environments/#{environment}.rb", after: "Rails.application.configure do\n" do <<-CODE
@@ -510,8 +510,8 @@ CODE
             inject_into_file 'config/environments/development.rb', after: "config.action_mailer.raise_delivery_errors = false\n" do <<-CODE
       config.action_mailer.delivery_method = :letter_opener
       config.action_mailer.perform_deliveries = false
-      config.action_mailer.default_url_options = { host: 'http://#{options[:name]}.dev' }
-      config.action_controller.default_url_options = { host: 'http://#{options[:name]}.dev' }
+      config.action_mailer.default_url_options = { host: ENV['DEFAULT_HOST'] }
+      config.action_controller.default_url_options = { host: ENV['DEFAULT_HOST'] }
           CODE
             end
           when 'test'

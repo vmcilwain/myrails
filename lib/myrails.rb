@@ -52,8 +52,8 @@ gem 'record_tag_helper'
         run 'bundle install'
 
         insert_into_file 'app/controllers/application_controller.rb', before: 'end' do <<-CODE
-    private
-          CODE
+  private
+CODE
         end
       end
 
@@ -69,7 +69,7 @@ gem 'record_tag_helper'
 
       desc 'install_css', 'Generate & include application css theme'
       def install_css
-        themes = Dir[File.join(TEMPLATES, 'assets', 'bootstrap_themes', '*')]
+        themes = Dir[File.join(TEMPLATES, 'rails', 'app','assets', 'bootstrap_themes', '*')]
 
         themes.each_with_index do |theme, index|
           say "[#{index}] #{File.basename(theme,'.*')}"
@@ -80,8 +80,8 @@ gem 'record_tag_helper'
         copy_file(themes[idx], "app/assets/stylesheets/#{File.basename(themes[idx])}")
 
         inject_into_file 'app/assets/stylesheets/application.css.sass', before: "@import will_paginate" do <<-CODE
-  @import #{File.basename(themes[idx], '.*')}
-          CODE
+@import #{File.basename(themes[idx], '.*')}
+CODE
         end
       end
 
@@ -115,20 +115,20 @@ gem 'record_tag_helper'
         copy_file 'rails/app/views/layout/_error_messages.html.haml', 'app/views/layouts/_error_messages.html.haml'
         copy_file 'rails/app/views/layout/_footer.html.haml', 'app/views/layouts/_footer.html.haml'
         insert_into_file 'app/controllers/application_controller.rb', after: "class ApplicationController < ActionController::Base\n" do <<-CODE
-    add_flash_types :error, :success
-          CODE
+  add_flash_types :error, :success
+CODE
         end
       end
 
       desc 'install_heroku', 'setup application for use with heroku using sqlite3 for development'
       def install_heroku
         insert_into_file 'Gemfile', before: "group :development, :test do\n" do <<-CODE
-    group :production do
-      gem 'pg'
-      gem 'rails_12factor'
-    end
+group :production do
+  gem 'pg'
+  gem 'rails_12factor'
+end
 
-          CODE
+CODE
           end
           copy_file 'db/sqlite3_database.yml', 'config/database.yml'
           copy_file 'heroku/Procfile', 'Procfile'
@@ -149,12 +149,12 @@ gem 'record_tag_helper'
         copy_file 'ui/ui_controller.rb', 'app/controllers/ui_controller.rb'
         copy_file 'ui/index.html.haml', 'app/views/ui/index.html.haml'
         inject_into_file 'config/routes.rb', after: "Rails.application.routes.draw do\n" do <<-CODE
-          # Requires an application restart everytime a new page is added.
-          Dir.glob('app/views/ui/*.html.haml').sort.each do |file|
-            action = File.basename(file,'.html.haml')
-            get \"ui/\#{action}\", controller: 'ui', action: action
-          end
-          CODE
+  # Requires an application restart everytime a new page is added.
+  Dir.glob('app/views/ui/*.html.haml').sort.each do |file|
+    action = File.basename(file,'.html.haml')
+    get \"ui/\#{action}\", controller: 'ui', action: action
+  end
+CODE
         end
       end
 
@@ -216,11 +216,11 @@ CODE
       desc 'install_devise', 'Generate devise files'
       def install_devise
         insert_into_file 'Gemfile', after: "gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]\n" do <<-CODE
-      gem 'devise'
-        CODE
+  gem 'devise'
+CODE
         end
         run 'bundle update'
-        copy_file 'spec/devise.rb', 'spec/support/configs/devise.rb'
+        copy_file 'spec/support/configs/devise.rb', 'spec/support/configs/devise.rb'
 
         devise_model = ask("What would you like to call the devise model? Default: user")
         devise_model = devise_model.empty? ? 'user' : devise_model
@@ -238,25 +238,25 @@ CODE
 
         if File.exist?('app/controllers/ui_controller.rb')
           inject_into_file 'app/controllers/ui_controller.rb', after: "class UiController < ApplicationController\n" do <<-CODE
-      skip_before_action :authenticate_#{devise_model}!
-          CODE
+  skip_before_action :authenticate_#{devise_model}!
+CODE
           end
         end
 
         if yes?('Will you be needing registration params override? Answer "yes" if you will be adding attributes to the user model')
           inject_into_file 'app/controllers/application_controller.rb',  after: "skip_before_action :authenticate_#{devise_model}!\n" do <<-CODE
-      # Before action include additional registration params
-      # (see #configure_permitted_parameters)
-      before_action :configure_permitted_parameters, if: :devise_controller?
-          CODE
+  # Before action include additional registration params
+  # (see #configure_permitted_parameters)
+  before_action :configure_permitted_parameters, if: :devise_controller?
+CODE
           end
 
           inject_into_file 'app/controllers/application_controller.rb',  after: "private\n" do <<-CODE
-      # Register additional registration params
-      def configure_permitted_parameters
-        devise_parameter_sanitizer.permit(:sign_up, keys: [:attribute, :attribute])
-      end
-          CODE
+  # Register additional registration params
+  def configure_permitted_parameters
+    devise_parameter_sanitizer.permit(:sign_up, keys: [:attribute, :attribute])
+  end
+CODE
           end
         end
       end
@@ -270,42 +270,42 @@ gem 'pundit'
 
         insert_into_file 'Gemfile', after: "group :test do\n" do <<-CODE
   gem 'pundit-matchers', '~> 1.1.0'
-        CODE
+CODE
         end
 
         run 'bundle update'
         run 'rails g pundit:install'
 
         inject_into_file 'app/controllers/application_controller.rb', after: "protect_from_forgery with: :exception\n" do <<-CODE
-      # Add pundit authorization
-      include Pundit
-        CODE
+  # Add pundit authorization
+  include Pundit
+CODE
         end
 
         inject_into_file 'app/controllers/application_controller.rb', after: "rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized\n" do <<-CODE
-      # Rescue from pundit error
-      # (see #user_not_authorized)
-      rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
-        CODE
+  # Rescue from pundit error
+  # (see #user_not_authorized)
+  rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
+CODE
         end
 
         inject_into_file 'app/controllers/application_controller.rb', after: "private\n" do <<-CODE
-      # Method to gracefully let a user know they are are not authorized
-      #
-      # @return flash [Hash] the action notice
-      def user_not_authorized
-      flash[:alert] = "You are not authorized to perform this action."
-      redirect_to home_path
-      end
-        CODE
+  # Method to gracefully let a user know they are are not authorized
+  #
+  # @return flash [Hash] the action notice
+  def user_not_authorized
+    flash[:alert] = "You are not authorized to perform this action."
+    redirect_to home_path
+  end
+CODE
         end
       end
 
       desc 'install_footnotes', 'Install rails-footnotes and run its generator'
       def install_footnotes
         insert_into_file 'Gemfile', after: "gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]\n" do <<-CODE
-      gem 'rails-footnotes'
-        CODE
+gem 'rails-footnotes'
+CODE
         end
         run 'bundle install'
         run 'rails generate rails_footnotes:install'
@@ -502,31 +502,27 @@ CODE
     option :name, required: true
     def config_env
       ENVIRONMENTS.each do |environment|
-        if options[:name].nil?
-          say "Missing parameter: --name"
-        else
-          case environment
-          when 'development'
-            inject_into_file 'config/environments/development.rb', after: "config.action_mailer.raise_delivery_errors = false\n" do <<-CODE
-      config.action_mailer.delivery_method = :letter_opener
-      config.action_mailer.perform_deliveries = false
-      config.action_mailer.default_url_options = { host: ENV['DEFAULT_HOST'] }
-      config.action_controller.default_url_options = { host: ENV['DEFAULT_HOST'] }
-          CODE
-            end
-          when 'test'
-            inject_into_file 'config/environments/test.rb', after: "config.action_mailer.delivery_method = :test\n" do <<-CODE
-      config.action_mailer.default_url_options = { host: 'http://localhost:3000' }
-      config.action_controller.default_url_options = { host: 'http://localhost:3000' }
-          CODE
-            end
-          when 'production'
-            inject_into_file 'config/environments/production.rb', after: "config.active_record.dump_schema_after_migration = false\n" do <<-CODE
-      config.action_mailer.default_url_options = { host: '' }
-      config.action_controller.default_url_options = { host: '' }
-      config.assets.compile = true
-          CODE
-            end
+        case environment
+        when 'development'
+          inject_into_file 'config/environments/development.rb', after: "config.action_mailer.raise_delivery_errors = false\n" do <<-CODE
+config.action_mailer.delivery_method = :letter_opener
+config.action_mailer.perform_deliveries = false
+config.action_mailer.default_url_options = { host: ENV['DEFAULT_HOST'] }
+config.action_controller.default_url_options = { host: ENV['DEFAULT_HOST'] }
+CODE
+          end
+        when 'test'
+          inject_into_file 'config/environments/test.rb', after: "config.action_mailer.delivery_method = :test\n" do <<-CODE
+config.action_mailer.default_url_options = { host: ENV['DEFAULT_HOST'] }
+config.action_controller.default_url_options = { host: ENV['DEFAULT_HOST'] }
+CODE
+          end
+        when 'production'
+          inject_into_file 'config/environments/production.rb', after: "config.active_record.dump_schema_after_migration = false\n" do <<-CODE
+config.action_mailer.default_url_options = { host: ENV['DEFAULT_HOST'] }
+config.action_controller.default_url_options = { host: ENV['DEFAULT_HOST'] }
+config.assets.compile = true
+CODE
           end
         end
       end
@@ -658,7 +654,8 @@ require 'database_cleaner'
         devise: 'Generate and configure Devise gem',
         dotenv: 'Generate and configure Dotenv gem (Do not use if figaro is already installed)',
         capistrano: 'Generate capistrano with default deployment',
-        figaro: 'Generate and configure Figaro Gem (Do not use if dotenv is already installed)'
+        figaro: 'Generate and configure Figaro Gem (Do not use if dotenv is already installed)',
+        env_config: 'Configure environment files with default hosts etc.'
       }
       unless name
         say 'ERROR: "myrails install" was called with no arguments'
@@ -705,6 +702,8 @@ require 'database_cleaner'
         install_capistrano
       when 'figaro'
         install_figaro
+      when 'env_config'
+        config_env
       else
         say "Unknown Action!"
       end

@@ -342,7 +342,8 @@ CODE
         install_pundit
         install_rspec
         install_footnotes
-        install_dotenv
+        config_env
+        install_figaro
         git_init
         say 'Dont forget to run config_env'
       end
@@ -634,6 +635,12 @@ require 'database_cleaner'
       template 'spec/request.rb', "spec/requests/#{options[:name]}_spec.rb"
       copy_file 'spec/request_shared_example.rb', 'spec/support/shared_examples/request_shared_examples.rb'
     end
+    
+    desc 'feature', 'Generates an RSpec feature spec'
+    option :name, required: true
+    def feature
+      copy_file 'spec/feature.rb', "spec/features/#{options[:name]}_spec.rb"
+    end
 
     desc 'install NAME', 'Install gems and customized files. Type `myrails install` for options'
     def install(name=nil)
@@ -680,7 +687,6 @@ require 'database_cleaner'
         install_footer
       when 'ui'
         install_ui
-        say 'Dont forget to run config_env'
       when 'pundit'
         install_pundit
         install_rails_helper

@@ -218,10 +218,11 @@ gem 'record_tag_helper'
         run "rails generate devise #{devise_model}"
         run 'rails generate devise:views'
 
-        inject_into_file 'app/controllers/application_controller.rb', before: 'protect_from_forgery with: :exception' do <<-CODE
-      # Devise authentication method
-      before_action :authenticate_#{devise_model}!
-        CODE
+        gsub_file 'app/controllers/application_controller.rb', "protect_from_forgery with: :exception", "protect_from_forgery"
+        inject_into_file 'app/controllers/application_controller.rb', after: "protect_from_forgery\n" do <<-CODE
+  # Devise authentication method
+  before_action :authenticate_#{devise_model}!
+CODE
         end
 
         if File.exist?('app/controllers/ui_controller.rb')

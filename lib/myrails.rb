@@ -426,6 +426,18 @@ set :fqdn,'domain.com'
 CODE
         end
       end
+      
+      def install_figaro
+        insert_into_file 'Gemfile', after: "gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]\n" do <<-CODE
+gem "figaro"
+CODE
+        end
+        
+        run 'bundle install'
+        run 'bundle exec figaro install'
+        copy_file 'rails/config/application.example.yml', 'config/application.example.yml'
+      end
+      
     end
     # end of no_tasks
 
@@ -644,8 +656,9 @@ require 'database_cleaner'
         git: 'Generate git directory and ignore default files',
         heroku: 'Generate needed setup for Heroku deployment',
         devise: 'Generate and configure Devise gem',
-        dotenv: 'Generate and configure Dotenv gem',
-        capistrano: 'Generate capistrano with default deployment'
+        dotenv: 'Generate and configure Dotenv gem (Do not use if figaro is already installed)',
+        capistrano: 'Generate capistrano with default deployment',
+        figaro: 'Generate and configure Figaro Gem (Do not use if dotenv is already installed)'
       }
       unless name
         say 'ERROR: "myrails install" was called with no arguments'
@@ -690,6 +703,8 @@ require 'database_cleaner'
         install_dotenv
       when 'capistrano'
         install_capistrano
+      when 'figaro'
+        install_figaro
       else
         say "Unknown Action!"
       end

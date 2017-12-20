@@ -1,0 +1,4 @@
+check process <%= fetch(:application) %>_unicorn with pidfile /var/www/<%= fetch(:application) %>/current/tmp/pids/unicorn.pid
+  start "/etc/init.d/<%= fetch(:application) %>_unicorn start"
+  stop  "/etc/init.d/<%= fetch(:application) %>_unicorn stop"
+  group <%= fetch(:application) %>

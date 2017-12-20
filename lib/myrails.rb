@@ -334,7 +334,88 @@ CODE
         git_init
         say 'Dont forget to run config_env'
       end
+
+
+
+      def install_capistrano
+        insert_into_file 'Gemfile', after: "group :development do\n" do <<-CODE
+  gem 'capistrano', '~> 3.6', group: :development
+  gem 'capistrano-rails', '~> 1.3', group: :development
+  gem 'capistrano-rvm', group: :development
+CODE
+      end
+
+        run 'bundle install'
+        run 'bundle exec cap install'
+        gsub_file 'Capfile', '# require "capistrano/rvm"', 'require "capistrano/rvm"'
+        gsub_file 'config/deploy.rb', '# ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp', 'ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp'
+        gsub_file 'config/deploy.rb', '# set :deploy_to, "/var/www/my_app_name"', 'set :deploy_to, "/var/www/#{fetch(:application)}"'
+        gsub_file 'config/deploy.rb', '# append :linked_dirs, "log", "tmp/pids", "tmp/cache", "tmp/sockets", "public/system"', 'append :linked_dirs, "log", "tmp/pids", "tmp/cache", "tmp/sockets", "public/system"'
+
+        run 'mkdir -p config/deploy/templates/maintenance'
+
+        Dir["#{__dir__}/myrails/templates/capistrano/**/*"].each do |file|
+          copy_file file, "#{file.gsub(__dir__+'/myrails/templates/capistrano/', '')}" unless File.directory? file
+        end
+
+        insert_into_file 'config/deploy.rb', before: '# Default branch is :master' do <<-CODE
+set :deploy_via, :remote_cache
+set :ssh_options, {forward_agent: true}
+CODE
+        end
+        insert_into_file 'Capfile', after: "require \"capistrano/rvm\"\n" do <<-CODE
+require "capistrano/rails"
+CODE
+        end
+        insert_into_file 'config/deploy.rb', after: "# set :ssh_options, verify_host_key: :secure\n" do <<-CODE
+namespace :deploy do
+  # after :restart, :clear_cache do
+  #   on roles(:app), in: :groups, limit: 3, wait: 10 do
+  #     # Here we can do anything such as:
+  #     # within release_path do
+  #     #   execute :rake, 'cache:clear'
+  #     # end
+  #   end
+  # end
+  before :finishing, :restart do
+    on roles(:app) do
+      invoke 'unicorn:restart'
+      invoke 'nginx:restart'
     end
+  end
+
+  task :upload_app_yml do
+    on roles(:app) do
+      info 'Uploading application.yml'
+      upload!("\#{Dir.pwd}/config/application.yml", "\#{fetch(:release_path)}/config")
+    end
+  end
+
+  before :starting, 'maintenance:on'
+  before :starting, 'monit:stop'
+  before :compile_assets, :upload_app_yml
+  before :published, 'nginx:create_nginx_config'
+  before :published, 'unicorn:create_unicorn_config'
+  before :published,'unicorn:create_unicorn_init'
+  after :restart, 'monit:create_monit_conf'
+  after :finished, 'monit:start'
+  after :finished, 'maintenance:off'
+end
+CODE
+          end
+
+        insert_into_file 'config/deploy/production.rb', before: "# role-based syntax" do <<-CODE
+set :fqdn,'domain.com'
+CODE
+        end
+
+        insert_into_file 'config/deploy/staging.rb', before: "# role-based syntax" do <<-CODE
+set :fqdn,'domain.com'
+CODE
+        end
+      end
+    end
+    # end of no_tasks
 
     desc 'model', "Generates a rails model with the given name along with its related spec file and namespace prefix for table creation. Use '/' to create a namespaced model"
     option :name, required: true
@@ -547,7 +628,8 @@ require 'database_cleaner'
         git: 'Generate git directory and ignore default files',
         heroku: 'Generate needed setup for Heroku deployment',
         devise: 'Generate and configure Devise gem',
-        dotenv: 'Generate and configure Dotenv gem'
+        dotenv: 'Generate and configure Dotenv gem',
+        capistrano: 'Generate capistrano with default deployment'
       }
       unless name
         say 'ERROR: "myrails install" was called with no arguments'
@@ -590,6 +672,8 @@ require 'database_cleaner'
         install_devise
       when 'dotenv'
         install_dotenv
+      when 'capistrano'
+        install_capistrano
       else
         say "Unknown Action!"
       end

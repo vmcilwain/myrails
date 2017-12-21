@@ -1,6 +1,0 @@
--if obj.errors.any?
-  .alert.alert-danger
-    =flash[:error]
-    %ul
-      -obj.errors.full_messages.each do |error|
-        %li #{error}

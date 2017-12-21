@@ -17,8 +17,6 @@ module Myrails
 
       desc 'install_gems', 'Add & Install gems that I commonly use'
       def install_gems
-        answer = ask 'Would you like to use [B]ootstrap or [M]aterial?'
-        
         insert_into_file 'Gemfile', before: "group :development, :test do" do <<-CODE
 group :test do
   gem 'simplecov'
@@ -61,15 +59,15 @@ CODE
       desc 'install_assets', 'Generate common asset pipeline files'
       def install_assets
         run "rm app/assets/stylesheets/application.css"
-        copy_file 'rails/app/assets/application.css.sass', 'app/assets/stylesheets/application.css.sass'
-        copy_file 'rails/app/assets/application.js', 'app/assets/javascripts/application.js'
-        copy_file 'rails/app/assets/animate.scss', 'app/assets/stylesheets/animate.scss'
-        copy_file 'rails/app/assets/will_paginate.scss', 'app/assets/stylesheets/will_paginate.scss'
+        copy_file 'rails/app/assets/stylesheets/application.css.sass', 'app/assets/stylesheets/application.css.sass'
+        copy_file 'rails/app/assets/javascripts/application.js', 'app/assets/javascripts/application.js'
+        copy_file 'rails/app/assets/stylesheets/animate.scss', 'app/assets/stylesheets/animate.scss'
+        copy_file 'rails/app/assets/stylesheets/will_paginate.scss', 'app/assets/stylesheets/will_paginate.scss'
       end
 
 
       def choose_bootstrap_theme
-        themes = Dir[File.join(TEMPLATES, 'rails', 'app','assets', 'bootstrap', 'bootstrap_themes', '*')]
+        themes = Dir[File.join(TEMPLATES, 'rails', 'app','assets', 'stylesheets', 'bootstrap', 'bootstrap_themes', '*')]
 
         themes.each_with_index do |theme, index|
           say "[#{index}] #{File.basename(theme,'.*')}"
@@ -111,7 +109,7 @@ CODE
         copy_file 'rails/app/views/layout/bootstrap/_info_messages.html.haml', 'app/views/layouts/_info_messages.html.haml'
         copy_file 'rails/app/views/layout/bootstrap/_success_message.html.haml', 'app/views/layouts/_success_message.html.haml'
         copy_file 'rails/app/views/layout/bootstrap/_error_messages.html.haml', 'app/views/layouts/_error_messages.html.haml'
-        copy_file 'rails/app/views/layout/bootstrap/_footer.html.haml', 'app/views/layouts/_footer.html.haml'
+        # copy_file 'rails/app/views/layout/bootstrap/_footer.html.haml', 'app/views/layouts/_footer.html.haml'
       end
       
       desc 'install_bootstrap', 'Generate Bootrap css theme'
@@ -122,10 +120,21 @@ gem 'autoprefixer-rails'
 CODE
         end
         
+        insert_into_file 'app/assets/stylesheets/application.css.sass', before: '@import trix' do <<-CODE
+@import bootstrap-sprockets
+@import bootstrap
+CODE
+        end
+        
+        insert_into_file 'app/assets/javascripts/application.js', before: '//= require trix' do <<-CODE
+//= require bootstrap-sprockets
+CODE
+        end
         run 'bundle install'
         choose_bootstrap_theme
         choose_bootstrap_footer
         copy_bootstrap_files
+        
       end
       
       def copy_material_files
@@ -146,7 +155,7 @@ CODE
 
         copy_material_files
         
-        insert_into_file 'app/assets/stylesheets/application.css.sass', before: '@import will_paginate' do <<-CODE
+        insert_into_file 'app/assets/stylesheets/application.css.sass', before: '@import trix' do <<-CODE
 @import "materialize/components/color"
 $primary-color: color("grey", "darken-3") !default
 $secondary-color: color("grey", "base") !default
@@ -155,7 +164,7 @@ $secondary-color: color("grey", "base") !default
 CODE
         end
       
-        insert_into_file 'app/assets/javascripts/application.js', after: "//= require turbolinks\n" do <<-CODE
+        insert_into_file 'app/assets/javascripts/application.js', before: "//= require trix" do <<-CODE
 //= require materialize
 CODE
         end

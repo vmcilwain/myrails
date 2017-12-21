@@ -1,17 +1,17 @@
 / Dropdown Structure
 %ul#admin-dropdown.dropdown-content
-  %li=link_to 'New Article', new_article_path
+  %li=link_to :Link1
   %li.divider
-  %li=link_to :Contacts, contacts_path
+  %li=link_to :Contacts
 .navbar-fixed
   %nav
     .nav-wrapper
-      =link_to 'App Name', root_path, class: 'brand-logo'
+      =link_to 'App Name', nil, class: 'brand-logo'
       %ul.right.hide-on-med-and-down
         %li=link_to :About
-        %li=link_to :option1
+        %li=link_to :Link1
         %li=link_to 'Contact Me'
-        -if current_user && current_user.admin?
+        -#if current_user && current_user.admin?
           / Dropdown Trigger
           %li
             %a.dropdown-button{"data-activates" => "admin-dropdown", :href => "#!"}

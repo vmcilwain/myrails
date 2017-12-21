@@ -36,8 +36,8 @@ CODE
   gem 'letter_opener'
   gem "rails-erd"
 CODE
-      end  
-          
+      end
+
       insert_into_file 'Gemfile', after: "gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]\n" do <<-CODE
 gem 'haml-rails'
 gem "ransack"
@@ -75,7 +75,7 @@ CODE
 
         idx = ask("Choose a color theme (by number) for the application. Default: 'spacelab'")
         idx = idx.empty? ? themes.index{|theme| theme if theme.include?('spacelab')} : idx.to_i
-      
+
         copy_file(themes[idx], "app/assets/stylesheets/#{File.basename(themes[idx])}")
 
         inject_into_file 'app/assets/stylesheets/application.css.sass', before: "@import will_paginate" do <<-CODE
@@ -83,7 +83,7 @@ CODE
 CODE
         end
       end
-      
+
       def choose_bootstrap_footer
         footers = Dir[File.join(TEMPLATES, 'rails', 'app', 'views','layout', 'bootstrap', 'footers', '*.haml')]
         footers_css = Dir[File.join(TEMPLATES, 'rails', 'app', 'views', 'layout', 'bootstrap', 'footers', 'css', '*')]
@@ -102,7 +102,7 @@ CODE
 CODE
         end
       end
-      
+
       def copy_bootstrap_files
         template 'rails/app/views/layout/bootstrap/application.html.haml', 'app/views/layouts/application.html.haml'
         template 'rails/app/views/layout/bootstrap/_nav.html.haml', 'app/views/layouts/_nav.html.haml'
@@ -111,7 +111,7 @@ CODE
         copy_file 'rails/app/views/layout/bootstrap/_error_messages.html.haml', 'app/views/layouts/_error_messages.html.haml'
         # copy_file 'rails/app/views/layout/bootstrap/_footer.html.haml', 'app/views/layouts/_footer.html.haml'
       end
-      
+
       desc 'install_bootstrap', 'Generate Bootrap css theme'
       def install_bootstrap
         insert_into_file 'Gemfile', after: "gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]\n" do <<-CODE
@@ -119,13 +119,13 @@ gem 'bootstrap-sass', '~> 3.3.1'
 gem 'autoprefixer-rails'
 CODE
         end
-        
+
         insert_into_file 'app/assets/stylesheets/application.css.sass', before: '@import trix' do <<-CODE
 @import bootstrap-sprockets
 @import bootstrap
 CODE
         end
-        
+
         insert_into_file 'app/assets/javascripts/application.js', before: '//= require trix' do <<-CODE
 //= require bootstrap-sprockets
 CODE
@@ -134,15 +134,15 @@ CODE
         choose_bootstrap_theme
         choose_bootstrap_footer
         copy_bootstrap_files
-        
+
       end
-      
+
       def copy_material_files
         Dir["#{__dir__}/myrails/templates/rails/app/views/layout/material/**/*"].each do |file|
           copy_file file, "app/views/layouts/#{File.basename(file)}"
         end
       end
-      
+
       desc 'install_material', 'Generate Material css theme'
       def install_material
         insert_into_file 'Gemfile', after: "gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]\n" do <<-CODE
@@ -150,11 +150,11 @@ CODE
   gem 'material_icons'
   CODE
         end
-        
+
         run 'bundle install'
 
         copy_material_files
-        
+
         insert_into_file 'app/assets/stylesheets/application.css.sass', before: '@import trix' do <<-CODE
 @import "materialize/components/color"
 $primary-color: color("grey", "darken-3") !default
@@ -163,7 +163,7 @@ $secondary-color: color("grey", "base") !default
 @import material_icons
 CODE
         end
-      
+
         insert_into_file 'app/assets/javascripts/application.js', before: "//= require trix" do <<-CODE
 //= require materialize
 CODE
@@ -173,17 +173,17 @@ CODE
       desc 'install_layout', 'Generate common layout files'
       def install_layout
         answer = ask 'Would you like to use [B]ootstrap or [M]aterial'
-        
+
         run 'rm app/views/layouts/application.html.erb'
-        
+
         install_assets
-        
+
         if answer =~ /^B|b/
           install_bootstrap
         elsif answer =~ /^M|m/
           install_material
         end
-        
+
         insert_into_file 'app/controllers/application_controller.rb', after: "class ApplicationController < ActionController::Base\n" do <<-CODE
   add_flash_types :error, :success
 CODE
@@ -497,18 +497,18 @@ set :fqdn,'domain.com'
 CODE
         end
       end
-      
+
       def install_figaro
         insert_into_file 'Gemfile', after: "gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]\n" do <<-CODE
 gem "figaro"
 CODE
         end
-        
+
         run 'bundle install'
         run 'bundle exec figaro install'
         copy_file 'rails/config/application.example.yml', 'config/application.example.yml'
       end
-      
+
     end
     # end of no_tasks
 
@@ -653,15 +653,15 @@ CODE
       end
 
       run 'bundle'
-      
+
       Dir["#{__dir__}/myrails/templates/spec/**/*"].each do |file|
         if file.include? '/support/'
           copy_file file, "#{file.gsub(__dir__+'/myrails/templates/', '')}" unless File.directory? file
         end
       end
-      
+
       copy_file 'engines/rakefile', 'Rakefile'
-      
+
       run 'rails g rspec:install'
 
       gsub_file 'spec/rails_helper.rb', "# Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }", "Dir[File.join(__dir__, 'support', '**', '*.rb')].each { |f| require f }"
@@ -705,11 +705,22 @@ require 'database_cleaner'
       template 'spec/request.rb', "spec/requests/#{options[:name]}_spec.rb"
       copy_file 'spec/request_shared_example.rb', 'spec/support/shared_examples/request_shared_examples.rb'
     end
-    
+
     desc 'feature', 'Generates an RSpec feature spec'
     option :name, required: true
     def feature
       copy_file 'spec/feature.rb', "spec/features/#{options[:name]}_spec.rb"
+    end
+
+    desc 'helper', 'Generates an RSpec helper in support/helpers for extracting reusable code'
+    option :name, required: true
+    option :type
+    def helper
+      template 'spec/helper.rb', "spec/support/helpers/#{options[:name].downcase.gsub("\s", '_')}.rb"
+      insert_into_file 'spec/rails_helper.rb', after: "RSpec.configure do |config|\n" do <<-CODE
+  config.include #{options[:name].camelize.gsub("\s", '')}Helper#{", type: #{options[:type]}" if options[:type]}
+CODE
+      end
     end
 
     desc 'install NAME', 'Install customizations to convfigure application quickly. Type `myrails install` for options'

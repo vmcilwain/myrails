@@ -713,6 +713,13 @@ require 'database_cleaner'
     end
 
     desc 'helper', 'Generates an RSpec helper in support/helpers for extracting reusable code'
+    long_desc <<-LONGDESC
+    `myrails helper` will generate an RSpec helper module to use with rspec.
+
+    You can optionally specify a type parameter which will only include the module for the given type of spec.
+
+    > $ myrails helper --name article --type :feature
+    LONGDESC
     option :name, required: true
     option :type
     def helper

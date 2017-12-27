@@ -3,7 +3,6 @@ module Rails
     def self.included(thor)
       thor.class_eval do
 
-        desc 'mysql_switch', 'Switch to mysql database'
         def mysql_switch
           gsub_file 'Gemfile', "gem 'sqlite3'", "gem 'mysql2', '>= 0.3.13', '< 0.5'"
           run 'bundle install'

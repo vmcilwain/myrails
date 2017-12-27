@@ -51,7 +51,7 @@ module Layout
         desc 'install_bootstrap', 'Generate Bootrap css theme'
         def install_bootstrap
           @templates = "#{__dir__}/../templates"
-          
+
           insert_into_file 'Gemfile', after: "gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]\n" do <<-CODE
     gem 'bootstrap-sass', '~> 3.3.1'
     gem 'autoprefixer-rails'

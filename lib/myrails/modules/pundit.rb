@@ -3,7 +3,7 @@ module Install
     def self.included(thor)
       thor.class_eval do
 
-        def add_gems
+        def add_pundit_gems
           insert_into_file 'Gemfile', after: "gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]\n" do <<-CODE
   gem 'pundit'
           CODE
@@ -44,7 +44,7 @@ CODE
 
         desc 'install_pundit', 'Install pundit gem and generate pundit files and application controller code'
         def install_pundit
-          add_gems
+          add_pundit_gems
           run 'rails g pundit:install'
           enable_pundit
         end

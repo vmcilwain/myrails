@@ -28,7 +28,7 @@ CODE
           end
         end
 
-        def add_gems
+        def add_rails_gems
           insert_into_file 'Gemfile', after: "gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]\n" do <<-CODE
 gem 'haml-rails'
 gem "ransack"
@@ -51,11 +51,11 @@ private
         def install_gems
           add_test_group
           add_development_test_gems
-          add_gems
+          add_rails_gems
           run 'bundle install'
           add_private_section
         end
-        
+
       end
     end
   end

@@ -16,25 +16,26 @@ CODE
         end
 
         def configure_devise
-          devise_model = ask("What would you like to call the devise model? Default: user")
-          devise_model = devise_model.empty? ? 'user' : devise_model
+          @devise_model = ask("What would you like to call the devise model? Default: user")
+          @devise_model = @devise_model.empty? ? 'user' : @devise_model
           run 'rails generate devise:install'
           run 'rake db:migrate'
-          run "rails generate devise #{devise_model}"
+          run "rails generate devise #{@devise_model}"
           run 'rails generate devise:views'
 
           gsub_file 'app/controllers/application_controller.rb', "protect_from_forgery with: :exception", "protect_from_forgery"
           inject_into_file 'app/controllers/application_controller.rb', after: "protect_from_forgery\n" do <<-CODE
   # Devise authentication method
-  before_action :authenticate_#{devise_model}!
+  before_action :authenticate_#{@devise_model}!
   CODE
           end
+          add_additional_fields
         end
 
         def configure_ui_controller
           if File.exist?('app/controllers/ui_controller.rb')
             inject_into_file 'app/controllers/ui_controller.rb', after: "class UiController < ApplicationController\n" do <<-CODE
-  skip_before_action :authenticate_#{devise_model}!
+  skip_before_action :authenticate_#{@devise_model}!
 CODE
             end
           end
@@ -42,7 +43,7 @@ CODE
 
         def add_additional_fields
           if yes?('Will you be needing registration params override? Answer "yes" if you will be adding attributes to the user model')
-            inject_into_file 'app/controllers/application_controller.rb',  after: "before_action :authenticate_#{devise_model}!\n" do <<-CODE
+            inject_into_file 'app/controllers/application_controller.rb',  after: "before_action :authenticate_#{@devise_model}!\n" do <<-CODE
     # Before action include additional registration params
     # (see #configure_permitted_parameters)
     before_action :configure_permitted_parameters, if: :devise_controller?
@@ -64,7 +65,6 @@ CODE
           add_rspec_config
           configure_devise
           configure_ui_controller
-          add_additional_fields
         end
 
       end

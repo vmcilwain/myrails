@@ -15,9 +15,9 @@ module Install
 
           install_rails_helper
 
-          Dir["#{__dir__}/myrails/templates/spec/**/*"].each do |file|
+          Dir["#{__dir__}/../templates/spec/**/*"].each do |file|
             if file.include?('/support/') && !['devise'].include?(File.basename(file, '.rb'))
-              copy_file file, "#{file.gsub(__dir__+'/myrails/templates/', '')}" unless File.directory? file
+              copy_file file, "#{file.gsub(__dir__+'/../templates/', '')}" unless File.directory? file
             end
           end
         end

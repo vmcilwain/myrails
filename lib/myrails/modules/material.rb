@@ -11,11 +11,11 @@ module Layout
         desc 'install_material', 'Generate Material css theme'
         def install_material
           @templates = "#{__dir__}/../templates"
-          
+
           insert_into_file 'Gemfile', after: "gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]\n" do <<-CODE
-    gem 'materialize-sass'
-    gem 'material_icons'
-    CODE
+  gem 'materialize-sass'
+  gem 'material_icons'
+  CODE
           end
 
           run 'bundle install'
@@ -23,16 +23,16 @@ module Layout
           copy_material_files
 
           insert_into_file 'app/assets/stylesheets/application.css.sass', before: '@import trix' do <<-CODE
-  @import "materialize/components/color"
-  $primary-color: color("grey", "darken-3") !default
-  $secondary-color: color("grey", "base") !default
-  @import materialize
-  @import material_icons
-  CODE
+@import "materialize/components/color"
+$primary-color: color("grey", "darken-3") !default
+$secondary-color: color("grey", "base") !default
+@import materialize
+@import material_icons
+CODE
           end
 
           insert_into_file 'app/assets/javascripts/application.js', before: "//= require trix" do <<-CODE
-  //= require materialize
+//= require materialize
   CODE
           end
         end

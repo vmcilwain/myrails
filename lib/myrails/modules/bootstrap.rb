@@ -15,7 +15,7 @@ module Layout
           copy_file(themes[idx], "app/assets/stylesheets/#{File.basename(themes[idx])}")
 
           inject_into_file 'app/assets/stylesheets/application.css.sass', before: "@import will_paginate" do <<-CODE
-    @import #{File.basename(themes[idx], '.*')}
+@import #{File.basename(themes[idx], '.*')}
     CODE
           end
         end
@@ -34,7 +34,7 @@ module Layout
           copy_file footers_css[idx], "app/assets/stylesheets/#{File.basename(footers_css[idx])}"
 
           inject_into_file 'app/assets/stylesheets/application.css.sass', after: "@import animate\n" do <<-CODE
-    @import #{File.basename(footers_css[idx], '.*')}
+@import #{File.basename(footers_css[idx], '.*')}
     CODE
           end
         end
@@ -53,20 +53,20 @@ module Layout
           @templates = "#{__dir__}/../templates"
 
           insert_into_file 'Gemfile', after: "gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]\n" do <<-CODE
-    gem 'bootstrap-sass', '~> 3.3.1'
-    gem 'autoprefixer-rails'
-    CODE
+gem 'bootstrap-sass', '~> 3.3.1'
+gem 'autoprefixer-rails'
+CODE
           end
 
           insert_into_file 'app/assets/stylesheets/application.css.sass', before: '@import trix' do <<-CODE
-    @import bootstrap-sprockets
-    @import bootstrap
+@import bootstrap-sprockets
+@import bootstrap
     CODE
           end
 
           insert_into_file 'app/assets/javascripts/application.js', before: '//= require trix' do <<-CODE
-    //= require bootstrap-sprockets
-    CODE
+  //= require bootstrap-sprockets
+  CODE
           end
           run 'bundle install'
           choose_bootstrap_theme

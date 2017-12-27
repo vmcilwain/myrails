@@ -3,7 +3,7 @@ module Install
     def self.included(thor)
       thor.class_eval do
 
-        def add_gems
+        def add_capistrano_gems
           insert_into_file 'Gemfile', after: "group :development do\n" do <<-CODE
   gem 'capistrano', '~> 3.6', group: :development
   gem 'capistrano-rails', '~> 1.3', group: :development
@@ -29,26 +29,28 @@ CODE
           gsub_file 'config/deploy.rb', '# append :linked_dirs, "log", "tmp/pids", "tmp/cache", "tmp/sockets", "public/system"', 'append :linked_dirs, "log", "tmp/pids", "tmp/cache", "tmp/sockets", "public/system"'
 
           insert_into_file 'config/deploy.rb', before: '# Default branch is :master' do <<-CODE
-  set :deploy_via, :remote_cache
-  set :ssh_options, {forward_agent: true}
+set :deploy_via, :remote_cache
+set :ssh_options, {forward_agent: true}
   CODE
           end
         end
 
         def copy_templates
-          Dir["#{__dir__}/myrails/templates/capistrano/**/*"].each do |file|
-            copy_file file, "#{file.gsub(__dir__+'/myrails/templates/capistrano/', '')}" unless File.directory? file
+          puts __dir__
+          Dir["#{__dir__}/../templates/capistrano/**/*"].each do |file|
+            puts file
+            copy_file file, "#{file.gsub(__dir__+'/../templates/capistrano/', '')}" unless File.directory? file
           end
         end
 
         def configure_env_files
           insert_into_file 'config/deploy/production.rb', before: "# role-based syntax" do <<-CODE
-  set :fqdn,'domain.com'
+set :fqdn,'domain.com'
   CODE
           end
 
           insert_into_file 'config/deploy/staging.rb', before: "# role-based syntax" do <<-CODE
-  set :fqdn,'domain.com'
+set :fqdn,'domain.com'
   CODE
           end
         end
@@ -93,6 +95,7 @@ CODE
         end
 
         def install_capistrano
+          add_capistrano_gems
           run 'bundle exec cap install'
           configure_capfile
           run 'mkdir -p config/deploy/templates/maintenance'

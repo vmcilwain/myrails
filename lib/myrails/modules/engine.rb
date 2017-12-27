@@ -20,7 +20,7 @@ module Rails
           end
         end
 
-        def add_gems
+        def add_engine_gems
           inject_into_file "#{options[:name]}.gemspec", after: "s.add_development_dependency \"sqlite3\"\n" do <<-CODE
       s.add_development_dependency 'rspec-rails'
       s.add_development_dependency 'capybara'
@@ -94,7 +94,7 @@ module Rails
         option :name, required: true
         def engine_setup
           add_gemspec_info
-          add_gems
+          add_engine_gems
           configure_rake_file
           configure_rspec
           copy_rspec_files

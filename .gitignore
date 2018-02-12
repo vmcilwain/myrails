@@ -12,3 +12,4 @@ ubuntu-xenial-16.04-cloudimg-console.log
 /test
 
 .DS_Store
+lib/myrails/modules/gems.locked

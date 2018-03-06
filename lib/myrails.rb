@@ -96,7 +96,7 @@ CODE
     include Rails::Engines
     include Rails::Database
 
-    desc 'install NAME', 'Install customizations to convfigure application quickly. Type `myrails install` for options'
+    desc 'install NAME', 'Install customizations to configure application quickly. Type `myrails install` for options'
     def install(name=nil)
       options = {
         application_helper: 'Overwrite default application helper with a custom helper',
@@ -156,10 +156,11 @@ CODE
       when 'env_config'
         config_env
       else
-        say "Unknown Action!"
+        say "Unknown Action! #{name}"
       end
     end
 
+    
   end
 end
 

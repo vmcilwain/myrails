@@ -7,6 +7,7 @@ module Install
         def install_rspec
           insert_into_file 'Gemfile', after: "gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]\n" do <<-CODE
   gem 'rspec-rails', group: :test
+  gem 'email-spec', group: :test
   CODE
           end
 

@@ -43,8 +43,8 @@ CODE
 
         def add_private_section
           insert_into_file 'app/controllers/application_controller.rb', before: 'end' do <<-CODE
-private
-  CODE
+  private
+ CODE
           end
         end
 

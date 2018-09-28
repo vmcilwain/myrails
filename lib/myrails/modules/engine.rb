@@ -8,7 +8,9 @@ module Rails
         def engine(etype='mountable')
           run "rails plugin new #{options[:name]} --dummy-path=spec/dummy --skip-test-unit --#{etype}"
         end
-
+        
+        desc 'add_gemspec_info', 'Generate gemspec info for a rails engine'
+        option :name, required: true
         def add_gemspec_info
           gsub_file "#{options[:name]}.gemspec", 's.homepage    = "TODO"', 's.homepage    = "http://TBD.com"'
           gsub_file "#{options[:name]}.gemspec", "s.summary     = \"TODO: Summary of #{options[:name].camelize}.\"", "s.summary     = \"Summary of #{options[:name].camelize}.\""
@@ -20,6 +22,8 @@ module Rails
           end
         end
 
+        desc 'add_engine_gems', 'Generate gem dependencies for a rails engine'
+        option :name, required: true
         def add_engine_gems
           inject_into_file "#{options[:name]}.gemspec", after: "s.add_development_dependency \"sqlite3\"\n" do <<-CODE
       s.add_development_dependency 'rspec-rails'
@@ -43,7 +47,8 @@ module Rails
 
           run 'bundle'
         end
-
+        
+        desc 'copy_rspec_files', 'Generate common rspec files for testing a rails engine'
         def copy_rspec_files
           Dir["#{__dir__}/myrails/templates/spec/**/*"].each do |file|
             if file.include? '/support/'
@@ -52,10 +57,12 @@ module Rails
           end
         end
 
+        desc 'configure_rake_file', 'Generate custom rake file for rails engine'
         def configure_rake_file
           copy_file 'engines/rakefile', 'Rakefile'
         end
 
+        desc 'configure_rspec', 'Install and configure rspec for a rails engine'
         def configure_rspec
           run 'rails g rspec:install'
 
@@ -78,6 +85,8 @@ module Rails
           end
         end
 
+        desc 'configure_engine', 'Configure a rils engine after its generated'
+        option :name, required: true
         def configure_engine
           inject_into_file "lib/#{options[:name]}/engine.rb", after: "class Engine < ::Rails::Engine\n" do <<-CODE
       config.generators do |g|

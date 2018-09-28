@@ -1,5 +1,6 @@
 module Rails
   module Generators
+    ENVIRONMENTS = %w(development test production)
     def self.included(thor)
       thor.class_eval do
 

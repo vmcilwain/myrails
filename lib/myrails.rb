@@ -24,7 +24,6 @@ module Myrails
     include Thor::Actions
     source_root "#{__dir__}/myrails/templates"
     TEMPLATES = source_root
-    ENVIRONMENTS = %w(development test production)
 
     no_tasks do
       include Install::Gems
@@ -105,7 +104,6 @@ CODE
         ui: 'Generate UI resource',
         pundit: 'Install and configure Pundit gem',
         rspec: 'Install and configure Rspec gem',
-        footnotes: 'Install and configure Footnotes gem',
         base: 'Run through all options listed in this list',
         git: 'Generate git directory and ignore default files',
         heroku: 'Generate needed setup for Heroku deployment',
@@ -137,8 +135,6 @@ CODE
         install_rails_helper
       when 'rspec'
         install_rspec
-      when 'footnotes'
-        install_footnotes
       when 'base'
         base_install
       when 'git'

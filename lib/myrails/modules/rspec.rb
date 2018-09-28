@@ -6,9 +6,8 @@ module Install
         desc 'install_rspec', 'Generate rspec structure & rspec configuration that I commonly use'
         def install_rspec
           insert_into_file 'Gemfile', after: "gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]\n" do <<-CODE
-  gem 'rspec-rails', group: :test
-  gem 'email-spec', group: :test
-  CODE
+gem 'rspec-rails', group: :test
+CODE
           end
 
           run 'bundle install'
@@ -26,20 +25,20 @@ module Install
         desc 'install_rails_helper', 'Add code to rspec/rails_helper so rspec runs the way I like'
         def install_rails_helper
           inject_into_file "spec/rails_helper.rb", after: "require 'rspec/rails'\n" do <<-CODE
-  require 'simplecov'
-  SimpleCov.start
+require 'simplecov'
+SimpleCov.start
 
-  Capybara.app_host = "http://localhost:3000"
-  Capybara.server_host = "localhost"
-  Capybara.server_port = "3000"
+Capybara.app_host = "http://localhost:3000"
+Capybara.server_host = "localhost"
+Capybara.server_port = "3000"
 
-  #use Chromedriver
-  unless ENV['NOCHROME']
-    Capybara.register_driver :selenium do |app|
-      Capybara::Selenium::Driver.new(app, :browser => :chrome)
-    end
+#use Chromedriver
+unless ENV['NOCHROME']
+  Capybara.register_driver :selenium do |app|
+    Capybara::Selenium::Driver.new(app, :browser => :chrome)
   end
-  CODE
+end
+CODE
           end
 
           gsub_file 'spec/rails_helper.rb', "# Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }", "Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }"
@@ -47,15 +46,15 @@ module Install
           gsub_file "spec/rails_helper.rb", "config.use_transactional_fixtures = true", "config.use_transactional_fixtures = false"
 
           inject_into_file 'spec/rails_helper.rb', after: "RSpec.configure do |config|\n" do <<-CODE
-    # Can use methods like dom_id in features
-    config.include ActionView::RecordIdentifier, type: :feature
-    # Can use methods likke strip_tags in features
-    config.include ActionView::Helpers::SanitizeHelper, type: :feature
-    # Can use methods like truncate
-    config.include ActionView::Helpers::TextHelper, type: :feature
-    config.include(JavascriptHelper, type: :feature)
-    config.include MailerHelper
-  CODE
+  # Can use methods like dom_id in features
+  config.include ActionView::RecordIdentifier, type: :feature
+  # Can use methods likke strip_tags in features
+  config.include ActionView::Helpers::SanitizeHelper, type: :feature
+  # Can use methods like truncate
+  config.include ActionView::Helpers::TextHelper, type: :feature
+  config.include(JavascriptHelper, type: :feature)
+  config.include MailerHelper
+CODE
           end
         end
 

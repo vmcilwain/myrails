@@ -20,7 +20,7 @@ module Database
           end
           
           case item
-          when 'mysql_switch:'
+          when 'mysql_switch'
             mysql_switch
           else
             say "Unknown Action!"

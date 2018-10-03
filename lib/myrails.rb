@@ -12,7 +12,8 @@ require_relative 'myrails/modules/database'
 require_relative 'myrails/modules/devise'
 require_relative 'myrails/modules/dotenv'
 require_relative 'myrails/modules/draper'
-require_relative 'myrails/modules/engine'
+require_relative 'myrails/modules/engine_generators'
+require_relative 'myrails/modules/engine_generator_actions'
 require_relative 'myrails/modules/figaro'
 require_relative 'myrails/modules/heroku'
 require_relative 'myrails/modules/pundit'
@@ -45,6 +46,7 @@ module Myrails
       include Layout::Material
       include Rails::Generator::Actions
       include RSpec::Generator::Actions
+      include Engine::Generator::Actions
       
       desc 'install_layout', 'Generate common layout files'
       def install_layout
@@ -116,7 +118,7 @@ CODE
     
     include Rails::Generators
     include RSpec::Generators
-    include Rails::Engines
+    include Engine::Generators
     include Rails::Database
 
     desc 'install NAME', 'Install customizations to configure application quickly. Type `myrails install` for options'

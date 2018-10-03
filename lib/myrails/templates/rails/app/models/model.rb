@@ -1,2 +1,2 @@
-class <%= options[:name].camelize %> < ApplicationRecord
+class <%= @name.camelize %> < ApplicationRecord
 end

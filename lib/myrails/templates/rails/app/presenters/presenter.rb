@@ -1,17 +1,17 @@
 # Presenter class for object views
-class <%= options[:name].camelize %>Presenter < BasePresenter
+class <%= @name.camelize %>Presenter < BasePresenter
   # Reference initialized object_presenter as object
-  presents :<%= options[:name]%>
+  presents :<%= @name%>
 
-  # delegate :attribute, to: :<%= options[:name]%>, allow_nil: true
+  # delegate :attribute, to: :<%= @name %>, allow_nil: true
 
   # Return concatenated full name
   def name
-    <%= options[:name]%>.attribute + " " + <%= options[:name]%>.attribute
+    <%= @name %>.attribute + " " + <%= @name %>.attribute
   end
 
   # Return edit path
   def edit_link
-    link_to :Edit, edit_<%= options[:name]%>_path(<%= options[:name]%>)
+    link_to :Edit, edit_<%= @name%>_path(<%= @name %>)
   end
 end

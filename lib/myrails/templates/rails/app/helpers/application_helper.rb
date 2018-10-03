@@ -39,11 +39,4 @@ module ApplicationHelper
   def us_date(date)
     date.strftime("%m/%d/%Y at %H:%M %p") rescue 'unknown'
   end
-
-  def present(object, klass = nil)
-    klass ||= "#{object.class}Presenter".constantize
-    presenter = klass.new(object, self)
-    yield presenter if block_given?
-    presenter
-  end
 end

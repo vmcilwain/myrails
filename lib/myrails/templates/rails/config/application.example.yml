@@ -3,29 +3,29 @@ DB_PASS:
 EMAIL:
 DEVISE_SECRET_KEY:
 # use YAML.load(ENV['FILE_TYPES'])
-FILE_TYPES:
-  - image/gif
-  - image/jpeg
-  - image/jpg
-  - image/png
-  - application/vnd.apple.keynote
-  - application/vnd.apple.pages
-  - application/vnd.apple.numbers
-  - application/vnd.ms-excel
-  - application/vnd.ms-powerpoint
-  - application/vnd.ms-word
-  - application/pdf
-  - text/plain
-  - application/zip
-  - application/x-zip
-  - application/x-zip-compressed
-  # Not tested yet
-  # - application/vnd.oasis.opendocument.text
-  # - application/vnd.oasis.opendocument.spreadsheet
-  # - application/vnd.oasis.opendocument.presentation
-  # - application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
-  # - application/vnd.openxmlformats-officedocument.presentationml.presentation
-  # - application/vnd.openxmlformats-officedocument.wordprocessingml.document
+# FILE_TYPES:
+#   - image/gif
+#   - image/jpeg
+#   - image/jpg
+#   - image/png
+#   - application/vnd.apple.keynote
+#   - application/vnd.apple.pages
+#   - application/vnd.apple.numbers
+#   - application/vnd.ms-excel
+#   - application/vnd.ms-powerpoint
+#   - application/vnd.ms-word
+#   - application/pdf
+#   - text/plain
+#   - application/zip
+#   - application/x-zip
+#   - application/x-zip-compressed
+#   # Not tested yet
+#   # - application/vnd.oasis.opendocument.text
+#   # - application/vnd.oasis.opendocument.spreadsheet
+#   # - application/vnd.oasis.opendocument.presentation
+#   # - application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+#   # - application/vnd.openxmlformats-officedocument.presentationml.presentation
+#   # - application/vnd.openxmlformats-officedocument.wordprocessingml.document
   # - application/octet-stream
 development:
   DEFAULT_HOST: 'http://localhost:3000'

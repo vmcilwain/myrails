@@ -11,14 +11,16 @@ require_relative 'myrails/modules/capistrano'
 require_relative 'myrails/modules/database'
 require_relative 'myrails/modules/devise'
 require_relative 'myrails/modules/dotenv'
+require_relative 'myrails/modules/draper'
 require_relative 'myrails/modules/engine'
 require_relative 'myrails/modules/figaro'
-require_relative 'myrails/modules/footnotes'
 require_relative 'myrails/modules/heroku'
 require_relative 'myrails/modules/pundit'
 require_relative 'myrails/modules/rails_generators'
+require_relative 'myrails/modules/rails_generator_actions'
 require_relative 'myrails/modules/rspec_generators'
 require_relative 'myrails/modules/rspec'
+
 module Myrails
   class Myrails < Thor
     include Thor::Actions
@@ -32,14 +34,15 @@ module Myrails
       include Install::RSpec
       include Install::Devise
       include Install::Pundit
-      include Install::Footnotes
       include Install::DotEnv
       include Install::Heroku
       include Install::Capistrano
       include Install::Assets
       include Install::Figaro
+      include Install::Draper
       include Layout::Bootstrap
       include Layout::Material
+      include Rails::Generator::Actions
 
       desc 'install_layout', 'Generate common layout files'
       def install_layout
@@ -76,20 +79,39 @@ CODE
         install_application_helper
         install_assets
         install_layout
-        install_css
-        install_footer
         install_ui
         install_pundit
+        install_draper
         install_rspec
-        install_footnotes
         config_env
         install_figaro
         git_init
-        say 'Dont forget to run config_env'
+        say 'Dont forget to run setup config/application.yml with initial values.'
       end
 
-    end
-    # end of no_tasks
+      desc 'install_sendgrid', 'Generate sendgrid initializer and mail interceptor'
+      def install_sendgrid
+        environments = %w(development test production)
+        
+        @email = ask('What email address would you like to use?')
+        
+        raise ArgumentError, 'Email address required' unless @email
+        
+        copy_file 'rails/app/mailers/sendgrid.rb', 'config/initializers/sendgrid.rb'
+        template 'rails/app/mailers/dev_mail_interceptor.rb', 'app/mailers/dev_mail_interceptor.rb'
+        environments.each do |environment|
+          unless environment == 'production'
+            inject_into_file "config/environments/#{environment}.rb", after: "Rails.application.configure do\n" do <<-CODE
+    ActionMailer::Base.register_interceptor(DevMailInterceptor)
+              CODE
+            end
+          end
+        end
+      end
+      
+    end # end of no_tasks
+    
+    
     include Rails::Generators
     include RSpec::Generators
     include Rails::Engines
@@ -98,21 +120,24 @@ CODE
     desc 'install NAME', 'Install customizations to configure application quickly. Type `myrails install` for options'
     def install(name=nil)
       options = {
-        application_helper: 'Overwrite default application helper with a custom helper',
-        gems: 'Install default gem set',
-        layout: 'Generate assets and custom styles using either Boostrap or Material',
-        ui: 'Generate UI resource',
-        pundit: 'Install and configure Pundit gem',
-        rspec: 'Install and configure Rspec gem',
+        app_helper: 'Overwrite default application helper with a custom helper',
         base: 'Run through all options listed in this list',
-        git: 'Generate git directory and ignore default files',
-        heroku: 'Generate needed setup for Heroku deployment',
+        capistrano: 'Generate capistrano with default deployment',
         devise: 'Generate and configure Devise gem',
         dotenv: 'Generate and configure Dotenv gem (Do not use if figaro is already installed)',
-        capistrano: 'Generate capistrano with default deployment',
+        draper: 'Generate and configure Draper gem',
+        env_config: 'Configure environment files with default hosts etc.',
         figaro: 'Generate and configure Figaro Gem (Do not use if dotenv is already installed)',
-        env_config: 'Configure environment files with default hosts etc.'
+        gems: 'Install default gem set',
+        git: 'Generate git directory and ignore default files',
+        heroku: 'Generate needed setup for Heroku deployment',
+        layout: 'Generate assets and custom styles using either Boostrap or Material',
+        pundit: 'Install and configure Pundit gem',
+        rspec: 'Install and configure Rspec gem',
+        sendgrid: 'Install and configure ActionMailer to use sendgrid',
+        ui: 'Generate UI resource'
       }
+      
       unless name
         say 'ERROR: "myrails install" was called with no arguments'
         say 'Usage: "myrails install NAME"'
@@ -151,10 +176,15 @@ CODE
         install_figaro
       when 'env_config'
         config_env
+      when 'draper',
+        install_draper
+      when 'sendgrid'
+        install_sendgrid
       else
         say "Unknown Action! #{name}"
       end
     end
+
 
     
   end

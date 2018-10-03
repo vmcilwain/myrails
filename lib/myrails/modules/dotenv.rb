@@ -6,8 +6,8 @@ module Install
         desc 'install_dotenv', 'Install dotenv gem'
         def install_dotenv
           insert_into_file 'Gemfile', after: "gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]\n" do <<-CODE
-  gem 'dotenv-rails', groups: [:development, :test]
-  CODE
+gem 'dotenv-rails', groups: [:development, :test]
+CODE
           end
 
           run 'bundle install'

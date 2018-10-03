@@ -4,9 +4,10 @@ module Rails
     
     def self.included(thor)
       thor.class_eval do
-        desc 'kickstart <OPTION> <NAME>', 'Generate a rails option with a given name'
+        desc 'kickstart <OPTION> <NAME>', 'Execute without options to see HELP. Generate a rails template with a given name'
         def kickstart(*opts)
           item, @name = opts
+          
           option = {
             controller: 'Generate rails controller with corresponding RSpec file',
             decorator: 'Generate draper decorator with corresponding RSpec file',
@@ -18,13 +19,13 @@ module Rails
           
           unless item
             say 'ERROR: "myrails kickstart" was called with no arguments'
-            say 'Usage: "myrails kickstart OPTION NAME"'
+            say 'Usage: "myrails kickstart <OPTION> <NAME>"'
             say "Available Options:\n"
             option.each{|k,v| say "* #{k}: #{v}"}
             exit
           end
           
-          raise ArgumentError, "NAME must be specified for #{item} option. Ex: `myrails kickstart OPTION NAME`" unless @name
+          raise ArgumentError, "NAME must be specified for #{item} option. Ex: `myrails kickstart <OPTION> <NAME>`" unless @name
           
           case item
           when 'model'

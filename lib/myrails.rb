@@ -19,6 +19,7 @@ require_relative 'myrails/modules/pundit'
 require_relative 'myrails/modules/rails_generators'
 require_relative 'myrails/modules/rails_generator_actions'
 require_relative 'myrails/modules/rspec_generators'
+require_relative 'myrails/modules/rspec_generator_actions'
 require_relative 'myrails/modules/rspec'
 
 module Myrails
@@ -43,7 +44,8 @@ module Myrails
       include Layout::Bootstrap
       include Layout::Material
       include Rails::Generator::Actions
-
+      include RSpec::Generator::Actions
+      
       desc 'install_layout', 'Generate common layout files'
       def install_layout
         answer = ask 'Would you like to use [B]ootstrap or [M]aterial'

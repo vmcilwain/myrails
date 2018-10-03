@@ -1,8 +1,8 @@
 require 'rails_helper'
 
-feature 'some-object management' do
+feature '<%= @description %>' do
   let(:var){}
   before {}
-  scenario 'scenario text' do
+  scenario '<%= @scenario %>' do
   end
 end

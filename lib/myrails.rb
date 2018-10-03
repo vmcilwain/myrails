@@ -8,7 +8,8 @@ require_relative 'myrails/modules/ui'
 require_relative 'myrails/modules/assets'
 require_relative 'myrails/modules/application'
 require_relative 'myrails/modules/capistrano'
-require_relative 'myrails/modules/database'
+require_relative 'myrails/modules/database_generator'
+require_relative 'myrails/modules/database_generator_actions'
 require_relative 'myrails/modules/devise'
 require_relative 'myrails/modules/dotenv'
 require_relative 'myrails/modules/draper'
@@ -47,6 +48,7 @@ module Myrails
       include Rails::Generator::Actions
       include RSpec::Generator::Actions
       include Engine::Generator::Actions
+      include Database::Generator::Actions
       
       desc 'install_layout', 'Generate common layout files'
       def install_layout
@@ -119,7 +121,7 @@ CODE
     include Rails::Generators
     include RSpec::Generators
     include Engine::Generators
-    include Rails::Database
+    include Database::Generators
 
     desc 'install NAME', 'Install customizations to configure application quickly. Type `myrails install` for options'
     def install(name=nil)

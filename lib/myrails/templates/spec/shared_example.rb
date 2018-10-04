@@ -1,5 +1,5 @@
-shared_examples '<%= options[:text] %>' do
-  context '<%= options[:text] %>' do
+shared_examples '<%= @description %>' do
+  context '<%= @context %>' do
     before do
       action
     end

@@ -1,2 +1,2 @@
-class <%= options[:name].split("/").first.camelize %>::<%= options[:name].split("/").first.camelize %>Controller < ApplicationController
+class <%= @name.split("/").first.camelize %>::<%= @name.split("/").first.camelize %>Controller < ApplicationController
 end

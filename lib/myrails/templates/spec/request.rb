@@ -1,108 +1,108 @@
 require 'rails_helper'
 
-describe '<%= options[:name] %> api' do
+describe '<%= @param %> api' do
   let(:headers) {{"ACCEPT" => "application/json"}}
-  let(:<%= options[:name] %>) {create :<%= options[:name] %>}
-  let(:<%= options[:name].pluralize %>) {create_list :<%= options[:name] %>, 3}
+  let(:<%= @param %>) {create :<%= @param %>}
+  let(:<%= @param.pluralize %>) {create_list :<%= @param %>, 3}
 
   describe 'GET index' do
     before do
-      <%= options[:name].pluralize %>
-      get '/<%= options[:name].pluralize %>'
+      <%= @param.pluralize %>
+      get '/<%= @param.pluralize %>'
     end
 
     it 'returns success status' do
       expect(response).to be_success
     end
 
-    it 'sets @<%= options[:name].pluralize %>' do
-      expect(assigns['<%= options[:name].pluralize %>']).to eq <%= options[:name].pluralize %>
+    it 'sets @<%= @param.pluralize %>' do
+      expect(assigns['<%= @param.pluralize %>']).to eq <%= @param.pluralize %>
     end
 
     it_behaves_like 'returns content as json' do
-      let(:action) {get '/<%= options[:name].pluralize %>'}
+      let(:action) {get '/<%= @param.pluralize %>'}
     end
   end
 
   describe 'GET show' do
-    before {get "/<%= options[:name].pluralize %>/#{<%= options[:name] %>.id}"}
+    before {get "/<%= @param.pluralize %>/#{<%= @param %>.id}"}
 
     it 'returns success status' do
       expect(response).to be_success
     end
 
     it 'sets @article' do
-      expect(assigns[:<%= options[:name] %>]).to eq <%= options[:name] %>
+      expect(assigns[:<%= @param %>]).to eq <%= @param %>
     end
 
     it_behaves_like 'returns content as json' do
-      let(:action) {get "/<%= options[:name].pluralize %>/#{<%= options[:name] %>.id}"}
+      let(:action) {get "/<%= @param.pluralize %>/#{<%= @param %>.id}"}
     end
   end
 
   describe 'POST create' do
     context 'successful' do
-      before {post '/<%= options[:name].pluralize %>', params: {<%= options[:name] %>: {}}, headers: headers}
+      before {post '/<%= @param.pluralize %>', params: {<%= @param %>: {}}, headers: headers}
 
       it 'returns created status' do
         expect(response).to have_http_status :created
       end
 
-      it 'sets @<%= options[:name] %>' do
-        expect(assigns[:<%= options[:name] %>]).to be_instance_of <%= options[:name].camelize %>
+      it 'sets @<%= @param %>' do
+        expect(assigns[:<%= @param %>]).to be_instance_of <%= @param.camelize %>
       end
 
       it_behaves_like 'returns content as json' do
-        let(:action) {post '/<%= options[:name].pluralize %>', params: {<%= options[:name] %>: {}}, headers: headers}
+        let(:action) {post '/<%= @param.pluralize %>', params: {<%= @param %>: {}}, headers: headers}
       end
     end
 
     context 'unsuccessful' do
-      before {post '/<%= options[:name].pluralize %>', params: {<%= options[:name] %>: {}}, headers: headers}
+      before {post '/<%= @param.pluralize %>', params: {<%= @param %>: {}}, headers: headers}
 
       it 'returns unprocessable_entity status' do
         expect(response).to have_http_status :unprocessable_entity
       end
 
-      it 'sets @<%= options[:name] %>' do
-        expect(assigns[:<%= options[:name] %>]).to be_a_new <%= options[:name].camelize %>
+      it 'sets @<%= @param %>' do
+        expect(assigns[:<%= @param %>]).to be_a_new <%= @param.camelize %>
       end
       it_behaves_like 'returns content as json' do
-        let(:action) {post '/<%= options[:name].pluralize %>', params: {<%= options[:name] %>: {}}, headers: headers}
+        let(:action) {post '/<%= @param.pluralize %>', params: {<%= @param %>: {}}, headers: headers}
       end
     end
   end
 
   describe 'PUT update' do
     context 'successful' do
-      before {put "/<%= options[:name].pluralize %>/#{<%= options[:name] %>.id}", params: {<%= options[:name] %>: {}}, headers: headers}
+      before {put "/<%= @param.pluralize %>/#{<%= @param %>.id}", params: {<%= @param %>: {}}, headers: headers}
 
       it 'returns success status' do
         expect(response).to have_http_status :success
       end
 
-      it 'sets @<%= options[:name] %>' do
-        expect(assigns['<%= options[:name] %>']).to eq <%= options[:name] %>
+      it 'sets @<%= @param %>' do
+        expect(assigns['<%= @param %>']).to eq <%= @param %>
       end
 
       it_behaves_like 'returns content as json' do
-        let(:action) {put "/<%= options[:name].pluralize %>/#{<%= options[:name] %>.id}", params: {<%= options[:name] %>: {}}}
+        let(:action) {put "/<%= @param.pluralize %>/#{<%= @param %>.id}", params: {<%= @param %>: {}}}
       end
     end
 
     context 'unsuccessful' do
-      before {put "/<%= options[:name].pluralize %>/#{<%= options[:name] %>.id}", params: {<%= options[:name] %>: {}}, headers: headers}
+      before {put "/<%= @param.pluralize %>/#{<%= @param %>.id}", params: {<%= @param %>: {}}, headers: headers}
 
       it 'returns unprocessable_entity status' do
         expect(response).to have_http_status :bad_request
       end
 
-      it 'sets @<%= options[:name] %>' do
-        expect(assigns[:<%= options[:name] %>]).to eq <%= options[:name] %>
+      it 'sets @<%= @param %>' do
+        expect(assigns[:<%= @param %>]).to eq <%= @param %>
       end
 
       it_behaves_like 'returns content as json' do
-        let(:action) {put "/<%= options[:name].pluralize %>/#{<%= options[:name] %>.id}", params: {<%= options[:name] %>: {}}, headers: headers}
+        let(:action) {put "/<%= @param.pluralize %>/#{<%= @param %>.id}", params: {<%= @param %>: {}}, headers: headers}
       end
     end
   end

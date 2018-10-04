@@ -3,7 +3,8 @@ module Layout
     def self.included(thor)
       thor.class_eval do
         def copy_material_files
-          Dir["#{__dir__}/myrails/templates/rails/app/views/layout/material/**/*"].each do |file|
+          Dir["#{__dir__}/../templates/rails/app/views/layout/material/**/*"].each do |file|
+            puts file
             copy_file file, "app/views/layouts/#{File.basename(file)}"
           end
         end
@@ -13,9 +14,9 @@ module Layout
           @templates = "#{__dir__}/../templates"
 
           insert_into_file 'Gemfile', after: "gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]\n" do <<-CODE
-  gem 'materialize-sass'
-  gem 'material_icons'
-  CODE
+gem 'materialize-sass'
+gem 'material_icons'
+CODE
           end
 
           run 'bundle install'

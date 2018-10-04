@@ -1,2 +1,2 @@
-module <%= options[:name].gsub("\s", '_').camelize %>Helper
+module <%= @param.gsub("\s", '_').camelize %>Helper
 end

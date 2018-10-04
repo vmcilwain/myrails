@@ -8,7 +8,7 @@ class DevMailInterceptor
     dev_text += "BCC address is: #{message.bcc.to_a.join(", ")}\n"
 
     message.subject = "[#{Socket.gethostname}] [#{Rails.env}] #{message.subject}"
-    message.to = '<%= options[:email]%>'
+    message.to = '<%= @email %>'
     message.cc = ""
     message.bcc = ""
     append_address_info(message, dev_text)

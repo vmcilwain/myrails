@@ -1,12 +1,12 @@
-class <%= options[:name].pluralize.camelize %>Controller < <% if options[:name].include?("/")%><%= options[:name].split("/").first.camelize %>::<%= options[:name].split("/").first.camelize %><% else %>Application<% end %>Controller
-  # before_action :<%= options[:name].split("/").last.singularize %>, only: []
+class <%= @name.pluralize.camelize %>Controller < <% if @name.include?("/")%><%= @name.split("/").first.camelize %>::<%= @name.split("/").first.camelize %><% else %>Application<% end %>Controller
+  # before_action :<%= @name.split("/").last.singularize %>, only: []
   private
 
-  def <%= options[:name].split("/").last.singularize %>
-    @<%= options[:name].split("/").last.singularize %> = <%= options[:name].camelize.singularize %>.find(params[:id])
+  def <%= @name.split("/").last.singularize %>
+    @<%= @name.split("/").last.singularize %> = <%= @name.camelize.singularize %>.find(params[:id])
   end
 
-  def <%= options[:name].split("/").last.singularize %>_params
-    params.require(:<%= options[:name].split("/").last.singularize %>).permit()
+  def <%= @name.split("/").last.singularize %>_params
+    params.require(:<%= @name.split("/").last.singularize %>).permit()
   end
 end

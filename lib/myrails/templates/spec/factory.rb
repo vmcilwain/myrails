@@ -1,5 +1,5 @@
 FactoryBot.define do
-  factory :<%= options[:name].gsub("/", "_") %>, class: "<%= options[:name].camelize %>" do
+  factory :<%= @name.gsub("/", "_") %>, class: "<%= @name.camelize %>" do
 
   end
 end

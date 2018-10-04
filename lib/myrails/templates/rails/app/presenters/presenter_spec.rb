@@ -1,16 +1,16 @@
 require 'rails_helper'
 #
-describe <%= options[:name].camelize %>Presenter do
+describe <%= @name.camelize %>Presenter do
   include_behavior
 
-  let(:presenter) {<%= options[:name].camelize %>Presenter.new(<%= options[:name] %>, view)}
-  let(:<%= options[:name] %>) {create :<%= options[:name] %>}
+  let(:presenter) {<%= @name.camelize %>Presenter.new(<%= @name %>, view)}
+  let(:<%= @name %>) {create :<%= @name %>}
 
   it 'returns name' do
     expect(presenter.name).to eq object.attribute + " " + object.attribute
   end
 
   it 'returns edit path' do
-    expect(presenter.edit_link).to eq link_to :Edit, edit_<%= options[:name] %>_path(<%= options[:name] %>)
+    expect(presenter.edit_link).to eq link_to :Edit, edit_<%= @name %>_path(<%= @name %>)
   end
 end

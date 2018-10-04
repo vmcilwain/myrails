@@ -1,30 +1,32 @@
-# Myrails
+# MyRails
 
-This gem was created to make generating rails related files and other rails gem files (that I use) a lot easier. It is a thor backed gem that was designed with rails 5 in mind but most of it "should" work with rails 4.
+A library for generating rails related templates and configuring some standard gems (that I use) a lot easier. This was designed with Rails 5 in mind but most of it "should" work with rails 4. An example of the design differences is, a generated model inherit from `ApplicatinoRecord` instead of `ActiveRecord::Base`
 
-This gem is not endorsed by the rails core team. I wrote it as a convenience for generating files that I would otherwise have written by hand.
+This library is not endorsed by the Rails core team. I wrote it as a convenience for generating code that I would otherwise have written by hand or would have had to manage with code snippets (I use more than one editor)
 
 ## Disclaimer
 
-`user at your own risk!` I am not held responsible for using this gem. If you are not usre it will work for you, install it on a vagrant vm and give it a try there. You can use even use the Vagrantfile that is in this repo to take care of configuring a useable vm.
+`Use at your own risk!` I am not responsible for any issues that come from using this library. If you are not sure it will work for you, install it on a vagrant vm and give it a try there. You can even use the Vagrantfile that is in this repo to take care of configuring a useable vm.
 
 ## Notes
 
-Use 1.1.1 if you are primarily developing in rails 3 & 4
+Use v1.1.1 if you are primarily developing in rails 3 & 4
 
-Use the latest version if are primarily developing in rails 5
+Use the latest version if you are primarily developing in rails 5
+
+## Requirements
+
+Ruby 2.2 and above
 
 ## Examples
 
-Here is an example of the gem works:
-
-Lets say I use pundit. With this gem I am able to run the following:
+A gem I use often is pundit. With this library I can generate a policy along with an RSpec pundit matcher file to test the policy with. I am able to run the following:
 
 ```ruby
-myrails policy --name=article
+myrails kickstart policy article
 ```
 
-which outputs:
+which outputs something like:
 
 ```
 create  app/policies/article_policy.rb
@@ -44,39 +46,34 @@ with corresponding files:
         └── article_policy_spec.rb
 ```
 
-Inside app/policies/articles_policy.rb is boiler plate code like:
+Inside app/policies/articles_policy.rb is boiler plate code (something like):
 
-```
+```ruby
 class ArticlePolicy < ApplicationPolicy
-  # Allow all users to access new article
+
   def new?
     true
   end
 
-  # Allows owner to edit Article
   def edit?
     user == record.user
   end
 
-  # Allows all users to create Article
   alias_method :create?, :new?
 
-  # Allows all users to view Article
   alias_method :show?, :new?
 
-  # Allows owner to update an Article
   alias_method :update?, :edit?
 
-  # Allows owner to remove an Article
   alias_method :destroy?, :edit?
 end
 ```
 
-Inside the spec/policies/articles_policy_spec.rb is boiler plate code like:
+Inside the spec/policies/articles_policy_spec.rb is boiler plate code (something like):
 
-```
-# Use with Pundit Matches: https://github.com/chrisalley/pundit-matchers
+```ruby
 require 'rails_helper'
+
 describe ArticlePolicy do
   subject { ArticlePolicy.new(user, article) }
 
@@ -107,15 +104,17 @@ end
 
 ## Installation
 
-In your terminal:
+In the terminal:
+
+### For use with Rails 3 & 4
 
 ```ruby
-# For development in rails 3 & 4 primarily
-
 gem install myrails -v 1.1.1
+```
 
-# For development in rails 5 primarily
+### For use with Rails 5
 
+```ruby
 gem install myrails
 ```
 
@@ -123,17 +122,25 @@ gem install myrails
 
 Simply type `myrails` to see the help menu
 
+Every option also has a help menu. For instance, specifying `myrails kickstart` will display something like:
+
 ```ruby
-# Example for generating a presenter class
-myrails presenter --name=post
+ERROR: "myrails kickstart" was called with no arguments
+Usage: "myrails kickstart <OPTION> <NAME>"
+Available Options:
+* controller: Generate rails controller with corresponding RSpec file
+* decorator: Generate draper decorator with corresponding RSpec file
+* factory: Generate factory[girl|bot] factory
+* model: Generate rails model with corresponding RSpec file
+* policy: Generate pundit policy with corresponding RSpec file
+* ui: Generate a ui file for mocking front end
 ```
-This generates a PostPresenter class in app/presenters that inherits from app/presenters/base_presenter.rb to be used in views. This also generates a spec/presenters/post_presenter_spec.rb file for testing.
 
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
-To install this gem onto your local machine, run `bundle exec rake install`.
+To install this gem onto your local machine, run `bundle exec rake build` then `bundle exec rake install`.
 
 ## Releasing
 To release a new version,

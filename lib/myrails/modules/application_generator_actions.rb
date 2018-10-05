@@ -3,23 +3,24 @@ module Application
     module Actions
       def self.included(thor)
         thor.class_eval do
-
-          def install_application_helper
+          
+          desc 'setup_application_helper', 'overwrite rails application helper with some default code'
+          def setup_application_helper
             copy_file 'rails/app/helpers/application_helper.rb', 'app/helpers/application_helper.rb'
           end
         
-          desc 'install_layout', 'Generate common layout files'
-          def install_layout
+          desc 'setup_layout', 'Generate JS and CSS files with a choice of CSS Framework'
+          def setup_layout
             answer = ask 'Would you like to use [B]ootstrap or [M]aterial'
 
             run 'rm app/views/layouts/application.html.erb'
 
-            install_assets
+            setup_app_assets
 
             if answer =~ /^B|b/
-              install_bootstrap
+              setup_bootstrap
             elsif answer =~ /^M|m/
-              install_material
+              setup_material
             end
 
             insert_into_file 'app/controllers/application_controller.rb', after: "class ApplicationController < ActionController::Base\n" do <<-CODE
@@ -28,8 +29,8 @@ module Application
             end
           end
         
-          desc 'git_init', "Initialize git with some files automatically ignored"
-          def git_init
+          desc 'setup_git', "Initialize git with some files set to be ignored"
+          def setup_git
             run 'git init'
             run 'echo /coverage >> .gitignore'
             run 'echo /config/application.yml >> .gitignore'
@@ -37,24 +38,24 @@ module Application
             run "git commit -m 'initial commit'"
           end
         
-          desc 'base_install', 'Run the most common actions in the right order'
-          def base_install
-            install_gems
-            install_application_helper
-            install_assets
-            install_layout
-            install_ui
-            install_pundit
-            install_draper
-            install_rspec
+          desc 'base_setup', 'Run the most common setup actions in the right order'
+          def base_setup
+            setup_gems
+            setup_application_helper
+            setup_assets
+            setup_layout
+            setup_ui
+            setup_pundit
+            setup_draper
+            setup_rspec
             config_env
-            install_figaro
-            git_init
+            setup_figaro
+            setup_git
             say 'Dont forget to run setup config/application.yml with initial values.'
           end
 
-          desc 'install_sendgrid', 'Generate sendgrid initializer and mail interceptor'
-          def install_sendgrid
+          desc 'setup_sendgrid', 'Generate sendgrid initializer and mail interceptor'
+          def setup_sendgrid
             environments = %w(development test production)
         
             @email = ask('What email address would you like to use?')

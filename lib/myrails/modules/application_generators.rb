@@ -34,38 +34,38 @@ module Application
 
           case name
           when 'application_helper'
-            install_application_helper
+            setup_application_helper
           when 'gems'
-            install_gems
+            setup_gems
           when 'layout'
-            install_layout
+            setup_layout
           when 'ui'
-            install_ui
+            setup_ui
           when 'pundit'
-            install_pundit
-            install_rails_helper
+            setup_pundit
+            setup_rails_helper
           when 'rspec'
-            install_rspec
+            setup_rspec
           when 'base'
-            base_install
+            base_setup
           when 'git'
-            git_init
+            setup_git
           when 'heroku'
             install_heroku
           when 'devise'
-            install_devise
+            setup_devise
           when 'dotenv'
-            install_dotenv
+            setup_dotenv
           when 'capistrano'
-            install_capistrano
+            setup_capistrano
           when 'figaro'
-            install_figaro
+            setup_figaro
           when 'env_config'
-            config_env
+            setup_env_configs
           when 'draper',
-            install_draper
+            setup_draper
           when 'sendgrid'
-            install_sendgrid
+            setup_sendgrid
           else
             say "Unknown Action! #{name}"
           end

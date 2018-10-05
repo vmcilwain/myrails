@@ -2,7 +2,8 @@ module Install
   module Capistrano
     def self.included(thor)
       thor.class_eval do
-
+        
+        desc 'add_capistrano_gems', 'Add campistrano to Gemfile and install'
         def add_capistrano_gems
           insert_into_file 'Gemfile', after: "group :development do\n" do <<-CODE
   gem 'capistrano', '~> 3.6', group: :development
@@ -13,7 +14,8 @@ CODE
 
           run 'bundle install'
         end
-
+        
+        dec 'configure_capfile', 'Add required libraries to capistrano capfile'
         def configure_capfile
           gsub_file 'Capfile', '# require "capistrano/rvm"', 'require "capistrano/rvm"'
 
@@ -23,6 +25,7 @@ CODE
           end
         end
 
+        desc 'configure_deploy', 'Add default options to capistrano deploy file'
         def configure_deploy
           gsub_file 'config/deploy.rb', '# ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp', 'ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp'
           gsub_file 'config/deploy.rb', '# set :deploy_to, "/var/www/my_app_name"', 'set :deploy_to, "/var/www/#{fetch(:application)}"'
@@ -35,14 +38,15 @@ set :ssh_options, {forward_agent: true}
           end
         end
 
+        desc 'copy_templates', 'Add capistrano templates used to manage the remote server'
         def copy_templates
           puts __dir__
           Dir["#{__dir__}/../templates/capistrano/**/*"].each do |file|
-            puts file
             copy_file file, "#{file.gsub(__dir__+'/../templates/capistrano/', '')}" unless File.directory? file
           end
         end
 
+        desc 'configure_env_files', 'Configure capistrano environemnt specific information'
         def configure_env_files
           insert_into_file 'config/deploy/production.rb', before: "# role-based syntax" do <<-CODE
 set :fqdn,'domain.com'
@@ -55,6 +59,7 @@ set :fqdn,'domain.com'
           end
         end
 
+        desc 'add_tasks', 'Add custom deploy tasks to capistrano deploy file'
         def add_tasks
           insert_into_file 'config/deploy.rb', after: "# set :ssh_options, verify_host_key: :secure\n" do <<-CODE
   namespace :deploy do
@@ -94,7 +99,8 @@ set :fqdn,'domain.com'
             end
         end
 
-        def install_capistrano
+        desc 'setup_capistrano', 'Run all capistrano setup actions in order'
+        def setup_capistrano
           add_capistrano_gems
           run 'bundle exec cap install'
           configure_capfile

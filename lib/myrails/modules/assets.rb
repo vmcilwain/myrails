@@ -2,8 +2,9 @@ module Install
   module Assets
     def self.included(thor)
       thor.class_eval do
-
-        def install_assets
+        
+        desc 'setup_assets', 'install CSS librarys and configure CSS & JS manifests'
+        def setup_assets
           run "rm app/assets/stylesheets/application.css"
           copy_file 'rails/app/assets/stylesheets/application.css.sass', 'app/assets/stylesheets/application.css.sass'
           copy_file 'rails/app/assets/javascripts/application.js', 'app/assets/javascripts/application.js'

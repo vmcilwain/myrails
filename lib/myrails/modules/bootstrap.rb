@@ -2,6 +2,8 @@ module Layout
   module Bootstrap
     def self.included(thor)
       thor.class_eval do
+        
+        desc 'choose_bootstrap_theme', 'Select a bootswatch.com bootstrap theme'
         def choose_bootstrap_theme
           themes = Dir[File.join(@templates, 'rails', 'app','assets', 'stylesheets', 'bootstrap', 'bootstrap_themes', '*')]
 
@@ -20,6 +22,7 @@ module Layout
           end
         end
 
+        desc 'choose_bootstrap_footer', 'Select a bootstrap footer template'
         def choose_bootstrap_footer
           footers = Dir[File.join(@templates, 'rails', 'app', 'views','layout', 'bootstrap', 'footers', '*.haml')]
           footers_css = Dir[File.join(@templates, 'rails', 'app', 'views', 'layout', 'bootstrap', 'footers', 'css', '*')]
@@ -38,18 +41,18 @@ module Layout
     CODE
           end
         end
-
+        
+        desc 'copy_bootstrap_files', 'generate layout navigation and flash messages'
         def copy_bootstrap_files
           template 'rails/app/views/layout/bootstrap/application.html.haml', 'app/views/layouts/application.html.haml'
           template 'rails/app/views/layout/bootstrap/_nav.html.haml', 'app/views/layouts/_nav.html.haml'
           copy_file 'rails/app/views/layout/bootstrap/_info_messages.html.haml', 'app/views/layouts/_info_messages.html.haml'
           copy_file 'rails/app/views/layout/bootstrap/_success_message.html.haml', 'app/views/layouts/_success_message.html.haml'
           copy_file 'rails/app/views/layout/bootstrap/_error_messages.html.haml', 'app/views/layouts/_error_messages.html.haml'
-          # copy_file 'rails/app/views/layout/bootstrap/_footer.html.haml', 'app/views/layouts/_footer.html.haml'
         end
 
-        desc 'install_bootstrap', 'Generate Bootrap css theme'
-        def install_bootstrap
+        desc 'setup_bootstrap', 'Generate layout using Bootrap CSS Framework'
+        def setup_bootstrap
           @templates = "#{__dir__}/../templates"
 
           insert_into_file 'Gemfile', after: "gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]\n" do <<-CODE
@@ -68,6 +71,7 @@ CODE
   //= require bootstrap-sprockets
   CODE
           end
+          
           run 'bundle install'
           choose_bootstrap_theme
           choose_bootstrap_footer

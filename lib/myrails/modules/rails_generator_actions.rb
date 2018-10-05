@@ -22,6 +22,7 @@ module Rails
               parent, child = name.split("/")
               template 'rails/app/controllers/namespace_controller.rb', "app/controllers/#{parent}/#{parent.downcase}_controller.rb"
             end
+            
             template 'spec/controller.rb', "spec/controllers/#{@name.downcase.pluralize}_controller_spec.rb"
             run "mkdir -p app/views/#{@name.downcase.pluralize}"
           end
@@ -31,24 +32,6 @@ module Rails
             template 'rails/app/policies/pundit.rb', "app/policies/#{@name.downcase}_policy.rb"
             template 'spec/pundit.rb', "spec/policies/#{@name.downcase}_policy_spec.rb"
           end
-
-  #         desc 'presenter', "Generates a presenter class with the given name and a related spec file. Use '/' to create a namespaced presenter"
-  #         option :name, required: true
-  #         def presenters
-  #           inject_into_file 'app/helpers/application_helper.rb', after: "module ApplicationHelper\n" do <<-CODE
-  #   def present(object, klass = nil)
-  #     klass ||= "#{object.class}Presenter".constantize
-  #     presenter = klass.new(object, self)
-  #     yield presenter if block_given?
-  #     presenter
-  #   end
-  #
-  # CODE
-  #           copy_file 'rails/app/presenters/base.rb', 'app/presenters/base_presenter.rb'
-  #           template 'rails/app/presenters/presenter.rb', "app/presenters/#{options[:name].downcase}_presenter.rb"
-  #           copy_file 'spec/support/configs/decorator_presenter.rb', 'spec/support/configs/decorator_presenter.rb'
-  #           template 'rails/app/presenters/presenter_spec.rb', "spec/presenters/#{options[:name].downcase}_presenter_spec.rb"
-  #         end
         
           desc 'decorator', 'Generates draper decoration with given name and related spec file'
           def decorator
@@ -105,3 +88,23 @@ module Rails
     end
   end
 end
+
+
+
+#         desc 'presenter', "Generates a presenter class with the given name and a related spec file. Use '/' to create a namespaced presenter"
+#         option :name, required: true
+#         def presenters
+#           inject_into_file 'app/helpers/application_helper.rb', after: "module ApplicationHelper\n" do <<-CODE
+#   def present(object, klass = nil)
+#     klass ||= "#{object.class}Presenter".constantize
+#     presenter = klass.new(object, self)
+#     yield presenter if block_given?
+#     presenter
+#   end
+#
+# CODE
+#           copy_file 'rails/app/presenters/base.rb', 'app/presenters/base_presenter.rb'
+#           template 'rails/app/presenters/presenter.rb', "app/presenters/#{options[:name].downcase}_presenter.rb"
+#           copy_file 'spec/support/configs/decorator_presenter.rb', 'spec/support/configs/decorator_presenter.rb'
+#           template 'rails/app/presenters/presenter_spec.rb', "spec/presenters/#{options[:name].downcase}_presenter_spec.rb"
+#         end

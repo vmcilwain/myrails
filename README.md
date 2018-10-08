@@ -8,6 +8,8 @@ This library is not endorsed by the Rails core team. I wrote it as a convenience
 
 `Use at your own risk!` I am not responsible for any issues that come from using this library. If you are not sure it will work for you, install it on a vagrant vm and give it a try there. You can even use the Vagrantfile that is in this repo to take care of configuring a useable vm.
 
+This does not work with the windows environment
+
 ## Notes
 
 Use v1.1.1 if you are primarily developing in rails 3 & 4

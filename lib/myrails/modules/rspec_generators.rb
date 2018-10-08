@@ -38,6 +38,9 @@ module RSpec
           end
         end
 
+        desc 's', 'spec shortcut'
+        alias_method :s, :spec
+        
       end
     end
   end

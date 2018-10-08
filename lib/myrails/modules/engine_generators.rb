@@ -57,6 +57,9 @@ module Engine
           end
         end
         
+        desc 'e', 'Engine shortcut'
+        alias_method :e, :engine
+        
       end
     end
   end

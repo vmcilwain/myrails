@@ -47,6 +47,9 @@ module Rails
           end
         end
         
+        desc 'ks', 'Kickstart shortcut'
+        alias_method :ks, :kickstart
+        
       end # end thor.class_eval
     end # end self.included
   end # end module Generators

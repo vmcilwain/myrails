@@ -15,7 +15,7 @@ CODE
         
         desc 'create_draper_application_decorator', 'Generate draper application decorator'
         def create_draper_application_decorator
-          copy_file 'rails/app/decorators/application_decorator.rb', 'app/decoratorators/application_decorator.rb'
+          copy_file 'rails/app/decorators/application_decorator.rb', 'app/decorators/application_decorator.rb'
         end
         
         desc 'setup_draper', 'Install draper gem'

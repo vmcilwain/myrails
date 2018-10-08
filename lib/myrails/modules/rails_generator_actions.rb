@@ -36,7 +36,7 @@ module Rails
           desc 'decorator', 'Generates draper decoration with given name and related spec file'
           def decorator
             copy_file 'rails/app/decorators/application_decorator.rb', 'app/decorators/application_decorator.rb'
-            template 'rails/app/decorators/decoration.rb', "app/decoratros/#{@name.downcase}_decoration.rb"
+            template 'rails/app/decorators/decoration.rb', "app/decorators/#{@name.downcase}_decoration.rb"
             copy_file 'spec/support/configs/decorator_presenter.rb', 'spec/support/configs/decorator_presenter.rb'
             template 'spec/decorator_spec.rb', "spec/decorators/#{@name.downcase}_decorator_spec.rb"
           end

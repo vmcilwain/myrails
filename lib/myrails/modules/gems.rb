@@ -52,7 +52,7 @@ CODE
           end
         end
 
-        def 'setup_gems', 'Install development, test and prodution gems'
+        desc 'setup_gems', 'Install development, test and prodution gems'
         def setup_gems
           add_test_group
           add_development_test_gems

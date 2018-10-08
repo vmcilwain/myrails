@@ -1,18 +1,19 @@
 module Layout
   module Bootstrap
+    
     def self.included(thor)
       thor.class_eval do
         
         desc 'choose_bootstrap_theme', 'Select a bootswatch.com bootstrap theme'
         def choose_bootstrap_theme
-          themes = Dir[File.join(@templates, 'rails', 'app','assets', 'stylesheets', 'bootstrap', 'bootstrap_themes', '*')]
+          themes = Dir[File.join("#{__dir__}", '..', 'templates', 'rails', 'app','assets', 'stylesheets', 'bootstrap', 'bootstrap_themes', '*')]
 
           themes.each_with_index do |theme, index|
             say "[#{index}] #{File.basename(theme,'.*')}"
           end
 
-          idx = ask("Choose a color theme (by number) for the application. Default: 'spacelab'")
-          idx = idx.empty? ? themes.index{|theme| theme if theme.include?('spacelab')} : idx.to_i
+          idx = ask "Choose a color theme (by number) for the application. Default: ", :yellow, 
+          default: themes.index{|theme| theme if theme.include?('spacelab')}
 
           copy_file(themes[idx], "app/assets/stylesheets/#{File.basename(themes[idx])}")
 
@@ -24,15 +25,15 @@ module Layout
 
         desc 'choose_bootstrap_footer', 'Select a bootstrap footer template'
         def choose_bootstrap_footer
-          footers = Dir[File.join(@templates, 'rails', 'app', 'views','layout', 'bootstrap', 'footers', '*.haml')]
-          footers_css = Dir[File.join(@templates, 'rails', 'app', 'views', 'layout', 'bootstrap', 'footers', 'css', '*')]
+          footers = Dir[File.join("#{__dir__}", '..', 'templates', 'rails', 'app', 'views','layout', 'bootstrap', 'footers', '*.haml')]
+          footers_css = Dir[File.join("#{__dir__}", '..', 'templates', 'rails', 'app', 'views', 'layout', 'bootstrap', 'footers', 'css', '*')]
 
           footers.each_with_index do |footer, index|
             say "[#{index}] #{File.basename(footer,'.html.*')}"
           end
 
-          idx = ask("Chose a footer theme (by number) for the application. Deault: 'footer-distributed (Basic)'")
-          idx = idx.empty? ? footers.index{|footer| footer if footer.include?('footer-distributed.html.haml')} : idx.to_i
+          idx = ask "Chose a footer theme (by number) for the application. Deault: ", :yellow, default: footers.index{|footer| footer if footer.include?('footer-distributed.html.haml')}
+
           copy_file footers[idx], "app/views/layouts/_footer.html.haml"
           copy_file footers_css[idx], "app/assets/stylesheets/#{File.basename(footers_css[idx])}"
 
@@ -53,7 +54,6 @@ module Layout
 
         desc 'setup_bootstrap', 'Generate layout using Bootrap CSS Framework'
         def setup_bootstrap
-          @templates = "#{__dir__}/../templates"
 
           insert_into_file 'Gemfile', after: "gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]\n" do <<-CODE
 gem 'bootstrap-sass', '~> 3.3.1'

@@ -6,14 +6,14 @@ module Engine
 
           desc 'new_engine', 'Generate a full or mountable engine. default: mountable'
           def new_engine
-            type = ask('Type (mountable or full)?: ', default: 'mountable')
+            type = ask 'Type (mountable or full)? Default: ', :yellow, default: 'mountable'
             run "rails plugin new #{@name} --dummy-path=spec/dummy --skip-test-unit --#{type}"
           end
         
           desc 'gemspec_setup', 'Generate gemspec info for a rails engine'
           def gemspec_setup
-            @email = ask('What email address would you like to use for this rails engine?:')
-            @author = ask('Who is the author of this rails engine?')
+            @email = ask 'What email address would you like to use for this rails engine?:', :yellow
+            @author = ask 'Who is the author of this rails engine?', :yellow
             
             gsub_file "#{@name}.gemspec", "s.authors     = [\"TODO: Your name\"]", "s.authors     = [\"#{@author}\"]"
             gsub_file "#{@name}.gemspec", "s.email       = [\"TODO: Your email\"]", "s.email       = [\"#{@email}\"]"

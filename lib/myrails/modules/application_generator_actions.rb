@@ -11,11 +11,11 @@ module Application
         
           desc 'setup_layout', 'Generate JS and CSS files with a choice of CSS Framework'
           def setup_layout
-            answer = ask 'Would you like to use [B]ootstrap or [M]aterial'
+            answer = ask 'Would you like to use [B]ootstrap or [M]aterial? Default: ', :yellow, default: 'M'
 
             run 'rm app/views/layouts/application.html.erb'
 
-            setup_app_assets
+            setup_assets
 
             if answer =~ /^B|b/
               setup_bootstrap
@@ -31,7 +31,7 @@ module Application
         
           desc 'setup_git', "Initialize git with some files set to be ignored"
           def setup_git
-            run 'git init'
+            run 'git init' unless File.exist?('.git')
             run 'echo /coverage >> .gitignore'
             run 'echo /config/application.yml >> .gitignore'
             run 'git add --all'
@@ -42,7 +42,6 @@ module Application
           def base_setup
             setup_gems
             setup_application_helper
-            setup_assets
             setup_layout
             setup_ui
             setup_pundit
@@ -58,7 +57,7 @@ module Application
           def setup_sendgrid
             environments = %w(development test production)
         
-            @email = ask('What email address would you like to use?')
+            @email = ask 'What email address would you like to use?', :yellow
         
             raise ArgumentError, 'Email address required' unless @email
         

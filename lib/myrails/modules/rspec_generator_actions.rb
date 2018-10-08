@@ -9,8 +9,8 @@ module RSpec
           
           desc 'shared_example', 'Generates an RSpec shared example template in the support directory'
           def shared_example
-            @description = ask("What is the NAME of shared example?, Ex: requires authorization:")
-            @context = ask("What is the CONTEXT of the shared example?, Ex: authorized user:")
+            @description = ask "What is the NAME of shared example?, Ex: requires authorization. Default: ", :yellow, default: 'shared example'
+            @context = ask "What is the CONTEXT of the shared example?, Ex: authorized user. Default: ", :yellow, default: 'shared example'
             
             template 'spec/shared_example.rb', "spec/support/shared_examples/#{@param.downcase.gsub("\s", '_')}_shared_examples.rb"
           end
@@ -23,8 +23,9 @@ module RSpec
 
           desc 'feature', 'Generates an RSpec feature spec'
           def feature
-            @description = ask("What is the description of feature?, Ex: user management:")
-            @scenario = ask("What is the CONTEXT of the shared example?, Ex: as a user ...:")
+            @description = ask "What is the description of feature?, Ex: user management. Default: ", :yellow, default: 'feature'
+            @scenario = ask "What is the CONTEXT of the shared example?, Ex: as a user ... Default: ", :yellow, default: 'scneario'
+            
             template 'spec/feature.rb', "spec/features/#{@param.downcase.gsub("\s", '_')}_spec.rb"
           end
 
@@ -38,7 +39,7 @@ module RSpec
           LONGDESC
 
           def helper
-            @type = ask('what is the type? Ex: :feature, :controller, :request, :model :')
+            @type = ask 'What is the type? Ex: :feature, :controller, :request, :model. Deafult: ', :yellow, default: :feature
             template 'spec/helper.rb', "spec/support/helpers/#{@param.downcase.gsub("\s", '_')}.rb"
             insert_into_file 'spec/rails_helper.rb', after: "RSpec.configure do |config|\n" do <<-CODE
   config.include #{@param.camelize.gsub("\s", '')}Helper#{", type: #{':' unless @type.include?(':')}#{@type}" if @type}

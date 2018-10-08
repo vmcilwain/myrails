@@ -19,8 +19,8 @@ CODE
 
         desc 'configure_devise', 'Genreate devise with a given model name'
         def configure_devise
-          @devise_model = ask("What would you like to call the devise model? Default: user")
-          @devise_model = @devise_model.empty? ? 'user' : @devise_model
+          @devise_model = ask "What would you like to call the devise model? Default: ", :yellow, default: 'user'
+          # @devise_model = @devise_model.empty? ? 'user' : @devise_model
           run 'rails generate devise:install'
           run 'rake db:migrate'
           run "rails generate devise #{@devise_model}"
@@ -47,7 +47,7 @@ CODE
 
         desc 'add_additional_fields', 'Ask if you want to include additional devise fields like first_name & last_name'
         def add_additional_fields
-          if yes?('Will you be needing registration params override? Answer "yes" if you will be adding attributes to the user model')
+          if yes? "Will you be needing registration params override? Explicitly answer 'yes' / 'no' if you will be adding attributes to your #{@devise_model} model", :yellow
             inject_into_file 'app/controllers/application_controller.rb',  after: "before_action :authenticate_#{@devise_model}!\n" do <<-CODE
     # Before action include additional registration params
     # (see #configure_permitted_parameters)

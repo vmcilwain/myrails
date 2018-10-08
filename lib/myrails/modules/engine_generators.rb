@@ -18,8 +18,8 @@ module Engine
           option = {
             # base_install: 'Generate a new mountable rails engine with a set of gems and a rake and rspec default configuration',
             auto_setup: 'Run all of the setup options listed',
-            engine_setup: 'Generate default configuration in Rails::Engine. <NAME> is the name used to generate the engine.',
-            gemspec_setup: 'Setup gempsec file with default information. <NAME> is the name used to generate the engine.',
+            engine_setup: 'Generate default configuration in Rails::Engine. Requires the name of the engine as the argument',
+            gemspec_setup: 'Setup gempsec file with default information',
             new: 'Generate clean a full or mountable rails gem',
             rake_setup: 'Setup rake to run rspec as the default test framework along with other configs',
             rspec_setup: 'Configure RSpec to work with a rails engine'

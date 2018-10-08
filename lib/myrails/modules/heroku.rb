@@ -6,12 +6,11 @@ module Install
         desc 'add_heroku_gems', 'Add gems for heroku to Gemfile'
         def add_heroku_gems
           insert_into_file 'Gemfile', before: "group :development, :test do\n" do <<-CODE
-  group :production do
-    gem 'pg'
-    gem 'rails_12factor'
-  end
+  gem 'pg', group: :production
+  gem 'rails_12factor', group: :production
 
   CODE
+          end
           run 'bundle install'
         end
         

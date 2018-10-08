@@ -29,7 +29,7 @@ CODE
         def setup_ui
           generate_ui_controller
           generate_index
-          setup_ui
+          setup_route
         end
 
       end

@@ -63,7 +63,7 @@ CODE
         end
 
         desc 'install_pundit', 'Install pundit gem and generate pundit files and application controller code'
-        def install_pundit
+        def setup_pundit
           add_pundit_gems
           generate_pundit_files
           enable_pundit

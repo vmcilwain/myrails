@@ -33,7 +33,7 @@ module Application
           end
 
           case name
-          when 'application_helper'
+          when 'app_helper'
             setup_application_helper
           when 'gems'
             setup_gems
@@ -51,7 +51,7 @@ module Application
           when 'git'
             setup_git
           when 'heroku'
-            install_heroku
+            setup_heroku
           when 'devise'
             setup_devise
           when 'dotenv'
@@ -61,7 +61,7 @@ module Application
           when 'figaro'
             setup_figaro
           when 'env_config'
-            setup_env_configs
+            config_env
           when 'draper',
             setup_draper
           when 'sendgrid'

@@ -15,7 +15,7 @@ CODE
           run 'bundle install'
         end
         
-        dec 'configure_capfile', 'Add required libraries to capistrano capfile'
+        desc 'configure_capfile', 'Add required libraries to capistrano capfile'
         def configure_capfile
           gsub_file 'Capfile', '# require "capistrano/rvm"', 'require "capistrano/rvm"'
 
@@ -40,8 +40,7 @@ set :ssh_options, {forward_agent: true}
 
         desc 'copy_templates', 'Add capistrano templates used to manage the remote server'
         def copy_templates
-          puts __dir__
-          Dir["#{__dir__}/../templates/capistrano/**/*"].each do |file|
+          Dir[File.join("#{__dir__}", "..", "templates","capistrano","**","*")].each do |file|
             copy_file file, "#{file.gsub(__dir__+'/../templates/capistrano/', '')}" unless File.directory? file
           end
         end

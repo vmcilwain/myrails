@@ -61,8 +61,9 @@ module Application
         
             raise ArgumentError, 'Email address required' unless @email
         
-            copy_file 'rails/app/mailers/sendgrid.rb', 'config/initializers/sendgrid.rb'
+            copy_file 'rails/config/initializers/sendgrid.rb', 'config/initializers/sendgrid.rb'
             template 'rails/app/mailers/dev_mail_interceptor.rb', 'app/mailers/dev_mail_interceptor.rb'
+            
             environments.each do |environment|
               unless environment == 'production'
                 inject_into_file "config/environments/#{environment}.rb", after: "Rails.application.configure do\n" do <<-CODE

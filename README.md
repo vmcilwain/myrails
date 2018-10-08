@@ -124,6 +124,15 @@ gem install myrails
 
 Simply type `myrails` to see the help menu
 
+The current options available are:
+
+* db - Rails database options
+* engine (aliase e) - Rails engine options
+* install (aliase i) - Rails gems and configuration options
+* kickstart (aliase ks) - Rails template generation options
+* spec (aliase s) - RSpec template generation options
+* setup_sendgrid - Install sendgrid initializer with mail interceptor
+
 Every option also has a help menu. For instance, specifying `myrails kickstart` will display something like:
 
 ```ruby

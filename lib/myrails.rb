@@ -62,6 +62,8 @@ module Myrails
     include Database::Generators
     include Application::Generators
     
+    # Moved here because it envokes draper kickstart method for some reason.
+    # Will address later.
     desc 'setup_sendgrid', 'Generate sendgrid initializer and mail interceptor'
     def setup_sendgrid
       environments = %w(development test production)

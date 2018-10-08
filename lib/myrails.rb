@@ -52,6 +52,7 @@ module Myrails
       include Engine::Generator::Actions
       include Database::Generator::Actions
       include Application::Generator::Actions
+      
     end # end of no_tasks
     
     
@@ -60,6 +61,28 @@ module Myrails
     include Engine::Generators
     include Database::Generators
     include Application::Generators
+    
+    desc 'setup_sendgrid', 'Generate sendgrid initializer and mail interceptor'
+    def setup_sendgrid
+      environments = %w(development test production)
+  
+      @email = ask 'What email address would you like to use?', :yellow
+  
+      raise ArgumentError, 'Email address required' unless @email
+  
+      copy_file 'rails/config/initializers/sendgrid.rb', 'config/initializers/sendgrid.rb'
+      template 'rails/app/mailers/dev_mail_interceptor.rb', 'app/mailers/dev_mail_interceptor.rb'
+      
+      environments.each do |environment|
+        unless environment == 'production'
+          inject_into_file "config/environments/#{environment}.rb", after: "Rails.application.configure do\n" do <<-CODE
+  ActionMailer::Base.register_interceptor(DevMailInterceptor)
+            CODE
+          end
+        end
+      end
+    end
+    
   end
 end
 

@@ -1,18 +1,16 @@
 module Layout
   module Material
-    TEMPLATES = "#{__dir__}/../templates" # double check if I need this
     def self.included(thor)
       thor.class_eval do
         desc 'generate_material_files', 'Generate material layout files'
         def generate_material_files
-          Dir["#{__dir__}/../templates/rails/app/views/layout/material/**/*"].each do |file|
+          Dir[File.join("#{__dir__}", "..", "templates", "rails", "app", "views", "layout", "material", "**", "*")].each do |file|
             copy_file file, "app/views/layouts/#{File.basename(file)}"
           end
         end
         
         desc 'add_material_gem', 'Add materialize sass and icons gem to Gemfile and run bundler'
         def add_material_gem
-          # @templates = "#{__dir__}/../templates"
 
           insert_into_file 'Gemfile', after: "gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]\n" do <<-CODE
 gem 'materialize-sass'

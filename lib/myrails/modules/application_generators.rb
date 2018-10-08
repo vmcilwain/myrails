@@ -20,7 +20,7 @@ module Application
             layout: 'Generate assets and custom styles using either Boostrap or Material',
             pundit: 'Install and configure Pundit gem',
             rspec: 'Install and configure Rspec gem',
-            sendgrid: 'Install and configure ActionMailer to use sendgrid',
+            # sendgrid: 'Install and configure ActionMailer to use sendgrid',
             ui: 'Generate UI resource'
           }
       
@@ -64,12 +64,15 @@ module Application
             config_env
           when 'draper',
             setup_draper
-          when 'sendgrid'
-            setup_sendgrid
+          # when 'sendgrid'
+          #   setup_sendgrid
           else
             say "Unknown Action! #{name}"
           end
         end
+        
+        desc 'i', 'Install shortcut'
+        alias_method :i, :install
         
       end
     end

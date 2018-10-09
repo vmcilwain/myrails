@@ -135,7 +135,7 @@ The current options available are:
 
 Every option also has a help menu. For instance, specifying `myrails kickstart` will display something like:
 
-```ruby
+```
 ERROR: "myrails kickstart" was called with no arguments
 Usage: "myrails kickstart <OPTION> <NAME>"
 Available Options:

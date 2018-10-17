@@ -6,7 +6,7 @@ This library is not endorsed by the Rails core team. I wrote it as a convenience
 
 ## Disclaimer
 
-`Use at your own risk!` I am not responsible for any issues that come from using this library. If you are not sure it will work for you, install it on a vagrant vm and give it a try there. You can even use the Vagrantfile that is in this repo to take care of configuring a useable vm.
+This code is provided "as is" and any express or implied warranties, including the implied warranties of merchantability and fitness for a particular purpose are disclaimed. In no event shall I or contributors be liable for any direct, indirect, incidental, special, exemplary, or consequential damages (including, but not limited to, procurement of substitute goods or services; loss of use, data, or profits; or business interruption) sustained by you or a third party, however caused and on any theory of liability, whether in contract, strict liability, or tort arising in any way out of the use of this code, even if advised of the possibility of such damage.
 
 This does not work with the windows environment
 
@@ -18,7 +18,7 @@ Use the latest version if you are primarily developing in rails 5
 
 ## Requirements
 
-Ruby 2.2 and above
+Ruby 2.2.2 and above
 
 ## Examples
 

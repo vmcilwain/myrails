@@ -37,9 +37,14 @@ gem 'haml-rails'
 gem "ransack"
 gem 'will_paginate'
 gem "font-awesome-rails"
-gem 'trix'
+# gem 'trix'
+gem 'trix-rails', require: 'trix' # Official trix gem does not support rails 5.2.1 yet (2018-10-16)
 gem 'record_tag_helper'
 gem 'jquery-rails'
+# active-storage gems
+# should also run brew install mupdf-tools ffmpeg to get file previews for non images
+gem "mini_magick"
+gem 'image_processing'
 CODE
           end
         end

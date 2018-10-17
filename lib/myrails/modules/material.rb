@@ -24,7 +24,7 @@ CODE
         desc 'setup_application_sass', 'add materialize to sass manifest'
         def setup_materialize_css
           insert_into_file 'app/assets/stylesheets/application.css.sass', before: '@import trix' do <<-CODE
-@import "materialize/components/color"
+@import "materialize/components/color-variables"
 $primary-color: color("grey", "darken-3") !default
 $secondary-color: color("grey", "base") !default
 @import materialize

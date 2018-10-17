@@ -45,6 +45,7 @@ gem 'jquery-rails'
 # should also run brew install mupdf-tools ffmpeg to get file previews for non images
 gem "mini_magick"
 gem 'image_processing'
+# gem 'meta_request', group: :development # Uncomment if using rails panel chrome extension
 CODE
           end
         end

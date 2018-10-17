@@ -1,5 +1,17 @@
 #!/bin/sh
+
+### BEGIN INIT INFO
+# Provides:          unicorn-server
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start daemon at boot time
+# Description:       Enable service provided by daemon.
+### END INIT INFO
+
 set -e
+
 # Example init script, this can be used with nginx, too,
 # since nginx and unicorn accept the same signals
 

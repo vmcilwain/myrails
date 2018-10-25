@@ -14,7 +14,7 @@
         -#if current_user && current_user.admin?
           / Dropdown Trigger
           %li
-            %a.dropdown-button{"data-activates" => "admin-dropdown", :href => "#!"}
+            %a.dropdown-trigger{"data-target" => "admin-dropdown", :href => "#!"}
               Administration
               -# %i.material-icons.right arrow_drop_down
         -if Rails.env.development?

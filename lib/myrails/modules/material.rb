@@ -39,6 +39,7 @@ CODE
 //= require materialize
   CODE
           end
+          copy_file 'rails/app/assets/javascripts/material.js.coffee', 'app/assets/javascripts/material.js.coffee'
         end
         desc 'install_material', 'Generate Material css theme'
         def setup_material

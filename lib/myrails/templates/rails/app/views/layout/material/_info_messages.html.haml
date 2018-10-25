@@ -1,14 +1,7 @@
 -if flash[:notice]
-  .row
-    .col.s12.m6
-      .card.teal.lighten-3
-        .card-content.white-text
-          %span.card-title Notice!
-          %p=flash[:notice]
+  :javascript
+    $(function(){M.toast({html:"#{flash[:notice]}"}, 10000);});
+
 -if flash[:alert]
-  .row
-    .col.s12.m6
-      .card.red.lighten-3
-        .card-content.white-text
-          %span.card-title Alert!
-          %p=flash[:alert]
+  :javascript
+    $(function(){M.toast({html:"#{flash[:alert]}"}, 10000);});

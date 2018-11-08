@@ -7,7 +7,7 @@ module Application
         def install(name=nil)
           options = {
             app_helper: 'Overwrite default application helper with a custom helper',
-            base: 'Run through all options listed in this list',
+            base: 'Run through all options listed in this list to fully configure a Rails application',
             capistrano: 'Generate capistrano with default deployment',
             devise: 'Generate and configure Devise gem',
             dotenv: 'Generate and configure Dotenv gem (Do not use if figaro is already installed)',

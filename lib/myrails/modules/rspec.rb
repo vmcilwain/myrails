@@ -30,7 +30,7 @@ CODE
         
         desc 'enable_support', 'Enable support files'
         def enable_support
-          gsub_file 'spec/rails_helper.rb', "# Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }", "Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }"
+          gsub_file 'spec/rails_helper.rb', "# Dir[Rails.root.join('spec', 'support', '**', '*.rb')].each { |f| require f }", "Dir[Rails.root.join('spec', 'support', '**', '*.rb')].each { |f| require f }"
         end
         
         desc 'disable_transctional_fixtures', 'Turn off transactional fixtures option'

@@ -25,7 +25,11 @@ CODE
   gem 'faker'
   gem 'yard'
   gem 'letter_opener'
-  gem "rails-erd"
+  gem 'rails-erd'
+  
+  # vscode debugger gems
+  gem 'ruby-debug-ide'
+  gem 'debase'
 CODE
           end
         end

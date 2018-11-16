@@ -27,7 +27,7 @@ CODE
   gem 'letter_opener'
   gem 'rails-erd'
   
-  # vscode debugger gems
+  # vscode debugger gems: https://github.com/Microsoft/vscode-recipes/tree/master/debugging-Ruby-on-Rails
   gem 'ruby-debug-ide'
   gem 'debase'
 CODE

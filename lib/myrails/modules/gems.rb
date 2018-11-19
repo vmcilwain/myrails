@@ -12,9 +12,10 @@ group :test do
   gem 'factory_bot_rails'
   gem 'database_cleaner'
   gem 'chromedriver-helper'
+  gem 'selenium-webdriver
   gem 'launchy'
   gem 'rails-controller-testing'
-  gem 'selenium-webdriver
+  gem 'capybara', require: 'capybara/rspec'
 end
 CODE
           end

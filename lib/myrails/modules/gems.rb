@@ -14,6 +14,7 @@ group :test do
   gem 'chromedriver-helper'
   gem 'launchy'
   gem 'rails-controller-testing'
+  gem 'selenium-webdriver
 end
 CODE
           end

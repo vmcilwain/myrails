@@ -16,11 +16,13 @@ module Install
         desc 'setup_route', 'Add route code to routes config'
         def setup_route
           inject_into_file 'config/routes.rb', after: "Rails.application.routes.draw do\n" do <<-CODE
-# Requires an application restart everytime a new page is added.
-Dir.glob('app/views/ui/*.html.haml').sort.each do |file|
-  action = File.basename(file,'.html.haml')
-  get \"ui/\#{action}\", controller: 'ui', action: action
-end
+  root 'ui#index'
+  
+  # Requires an application restart everytime a new page is added.
+  Dir.glob('app/views/ui/*.html.haml').sort.each do |file|
+    action = File.basename(file,'.html.haml')
+    get \"ui/\#{action}\", controller: 'ui', action: action
+  end
 CODE
           end
         end

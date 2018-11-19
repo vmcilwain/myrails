@@ -48,7 +48,7 @@ CODE
   config.include ActionView::Helpers::SanitizeHelper, type: :feature
   # Can use methods like truncate
   config.include ActionView::Helpers::TextHelper, type: :feature
-  config.include(JavascriptHelper, type: :feature)
+  config.include JavascriptHelper, type: :feature
   config.include MailerHelper
 CODE
           end
